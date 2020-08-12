@@ -24,9 +24,9 @@ The concepts covered here are:
 
 
 ## Table of Contents
-1. [How Use](#How-Use)
-2. [Requirements](#Requirements)
-3. [Installation](#Installation)
+1. [Requirements](#Requirements)
+2. [Installation](#Installation)
+3. [Testing](#Testing)
 4. [Authors](#Authors)
 5. [License](#License)
 
@@ -105,3 +105,7 @@ vagrant@~$
 - Twitter: [@gogomillan](https://twitter.com/gogomillan)
 - Github: [@gogomillan](https://github.com/gogomillan)
 - LinkedIn: [@gogomillan](https://linkedin.com/in/gogomillan)
+
+
+## License
+MIT License [LICENSE](LICENSE)
