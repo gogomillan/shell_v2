@@ -4,9 +4,7 @@ original sh "Borne shell" functionality, but an small subset.
 
 The concepts covered here are:
 - Who designed and implemented the original Unix operating system
-- Who wrote the first version of the UNIX shell
-- Who invented the B programming language (the direct predecessor to the C programming language)
-- Who is Ken Thompson
+- Who wrote the first version of the Unix shell
 - How does a shell work
 - What are a pid and a ppid
 - How to manipulate the environment of the current process
