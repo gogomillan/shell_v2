@@ -20,15 +20,22 @@ commhist_s *head = NULL, *tail = NULL, *node = NULL, *deno = NULL;
 		return (EXIT_SUCCESS);
 
 	home = _getenv("HOME", lenv);
+	if (home == NULL)
+	{	node = head;
+		while (node != NULL)
+		{	deno = node;
+			node = node->next;
+			free(deno->cmd), free(deno);
+		}
+	}
+
 	sprintf(filename, "%s/%s", home, HISTORY_FILE);
 	fd = open(filename, O_CREAT | O_RDWR | O_TRUNC, S_IRUSR | S_IWUSR);
 	if (fd <= -1)
 		return (-1);
 
-	node = head;
 	while (node != NULL)
-	{
-		qty = write(fd, node->cmd, _strlen(node->cmd));
+	{	qty = write(fd, node->cmd, _strlen(node->cmd));
 		if (qty < 1)
 			return (-1);
 		qty = write(fd, &nl, 1);

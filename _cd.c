@@ -18,6 +18,8 @@ int _cd(char **argv, lenv_s **lenv, unsigned int *e)
 
 	home = _getenv("HOME", lenv);			/* Get home from environment */
 	pwd = _getenv("OLDPWD", lenv);			/* Get oldpwd from environment */
+	if (home == NULL)
+		return (-1);
 	if (askcwd(&prev, size) == -1)			/* Get previous path, if fail resize */
 		return (-1);
 
