@@ -1,3 +1,6 @@
+# Object files
+*.o
+
 ### Emacs ###
 # -*- mode: gitignore; -*-
 *~
@@ -65,5 +68,6 @@ Sessionx.vim
 .netrwhist
 # Auto-generated tag files
 tags
+
 # Persistent undo
 [._]*.un~
