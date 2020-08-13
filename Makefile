@@ -15,6 +15,7 @@ all: $(APP)
 
 $(APP): $(OBJ)
 	$(CC) $^ -ggdb3 $(CFLAGS) -o $(APP)
+	cp $(APP) test
 
 %.o: %.c
 	@$(CC) -c -ggdb3 $(CFLAGS) $< -o $@
