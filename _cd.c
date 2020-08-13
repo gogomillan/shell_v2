@@ -19,15 +19,13 @@ int _cd(char **argv, lenv_s **lenv, unsigned int *e)
 	home = _getenv("HOME", lenv);			/* Get home from environment */
 	pwd = _getenv("OLDPWD", lenv);			/* Get oldpwd from environment */
 	if (askcwd(&prev, size) == -1)			/* Get previous path, if fail resize */
-	{
-		free(home), free(pwd);
 		return (-1);
-	}
+
 	if (argv[2] == NULL && home != NULL)	/* When "cd" (only) */
 	{
 		if (chdir(home) == -1)
 		{
-			prnerr(argv[0], e, home), free(home), free(pwd), free(prev);
+			prnerr(argv[0], e, home), free(prev);
 			return (-1);
 		}
 	}
@@ -35,7 +33,7 @@ int _cd(char **argv, lenv_s **lenv, unsigned int *e)
 	{
 		if (chdir(home) == -1)
 		{
-			prnerr(argv[0], e, home), free(home), free(pwd), free(prev);
+			prnerr(argv[0], e, home), free(prev);
 			return (-1);
 		}
 	}
@@ -43,7 +41,7 @@ int _cd(char **argv, lenv_s **lenv, unsigned int *e)
 	{
 		if (chdir(pwd) == -1)
 		{
-			prnerr(argv[0], e, pwd), free(home), free(pwd), free(prev);
+			prnerr(argv[0], e, pwd), free(prev);
 			return (-1);
 		}
 		ynprn = 1;
@@ -52,7 +50,7 @@ int _cd(char **argv, lenv_s **lenv, unsigned int *e)
 	{
 		if (chdir(argv[2]) == -1)			/* When "cd path" */
 		{
-			prnerr(argv[0], e, argv[2]), free(home), free(pwd), free(prev);
+			prnerr(argv[0], e, argv[2]), free(prev);
 			return (-1);
 		}
 	}
