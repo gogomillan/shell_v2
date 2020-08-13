@@ -23,8 +23,7 @@ commhist_s *head = NULL, *tail = NULL, *node = NULL, *deno = NULL;
 	if (home == NULL)
 	{	node = head;
 		while (node != NULL)
-		{	deno = node;
-			node = node->next;
+		{	deno = node, node = node->next;
 			free(deno->cmd), free(deno);
 		}
 	}
@@ -41,8 +40,7 @@ commhist_s *head = NULL, *tail = NULL, *node = NULL, *deno = NULL;
 		qty = write(fd, &nl, 1);
 		if (qty < 1)
 			return (-1);
-		deno = node;
-		node = node->next;
+		deno = node, node = node->next;
 		free(deno->cmd), free(deno);
 	}
 	if (close(fd) == -1)
