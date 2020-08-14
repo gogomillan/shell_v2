@@ -7,8 +7,8 @@ void prnerr(char *prg, unsigned int *e, char *path);
  * _cd - function cd
  * desc: change between directories
  * @argv: the parameters
- * @e : the executions counter
  * @lenv: the enviroment list
+ * @e : the executions counter
  * Return: EXIT_SUCCESS in success.
  */
 int _cd(char **argv, lenv_s **lenv, unsigned int *e)
@@ -26,39 +26,35 @@ int _cd(char **argv, lenv_s **lenv, unsigned int *e)
 	if (argv[2] == NULL && home != NULL)	/* When "cd" (only) */
 	{
 		if (chdir(home) == -1)
-		{
-			prnerr(argv[0], e, home), free(prev);
+		{	prnerr(argv[0], e, home), free(prev);
 			return (-1);
 		}
 	}
 	else if (argv[2][0] == '~')				/* When "cd ~" */
 	{
 		if (chdir(home) == -1)
-		{
-			prnerr(argv[0], e, home), free(prev);
+		{	prnerr(argv[0], e, home), free(prev);
 			return (-1);
 		}
 	}
 	else if (argv[2][0] == '-')				/* When "cd -" */
 	{
-		if (chdir(pwd) == -1)
-		{
-			prnerr(argv[0], e, pwd), free(prev);
-			return (-1);
-		}
+		if (pwd)
+			if (chdir(pwd) == -1)
+			{	prnerr(argv[0], e, pwd), free(prev);
+				return (-1);
+			}
 		ynprn = 1;
 	}
 	else
 	{
 		if (chdir(argv[2]) == -1)			/* When "cd path" */
-		{
-			prnerr(argv[0], e, argv[2]), free(prev);
+		{	prnerr(argv[0], e, argv[2]), free(prev);
 			return (-1);
 		}
 	}
 	if (askcwd(&new, size) == -1)			/* Get new path, if fail resize */
-	{
-		free(home), free(pwd), free(prev);
+	{	free(home), free(pwd), free(prev);
 		return (-1);
 	}
 	av[0] = "./hsh", av[1] = "cd", av[2] = "OLDPWD", av[3] = prev;
