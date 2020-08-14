@@ -81,7 +81,7 @@ size_t print_list(lenv_s **head)
 		if (h->var == '\0')
 			printf("[0] (nil)\n");
 		else
-			printf("%s\n", h->var);
+			printf("%s\n%c", h->var, '\0');
 		h = h->next;
 	}
 
