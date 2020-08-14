@@ -18,7 +18,6 @@ commhist_s *head = NULL, *tail = NULL, *node = NULL, *deno = NULL;
 		return (EXIT_SUCCESS);
 	if (tail == NULL)
 		return (EXIT_SUCCESS);
-
 	home = _getenv("HOME", lenv);
 	if (home == NULL)
 	{	node = head;
@@ -26,13 +25,14 @@ commhist_s *head = NULL, *tail = NULL, *node = NULL, *deno = NULL;
 		{	deno = node, node = node->next;
 			free(deno->cmd), free(deno);
 		}
+		currhist(NULL, NULL);
+		return (EXIT_SUCCESS);
 	}
-
 	sprintf(filename, "%s/%s", home, HISTORY_FILE);
 	fd = open(filename, O_CREAT | O_RDWR | O_TRUNC, S_IRUSR | S_IWUSR);
 	if (fd <= -1)
 		return (-1);
-
+	node = head;
 	while (node != NULL)
 	{	qty = write(fd, node->cmd, _strlen(node->cmd));
 		if (qty < 1)
@@ -45,7 +45,6 @@ commhist_s *head = NULL, *tail = NULL, *node = NULL, *deno = NULL;
 	}
 	if (close(fd) == -1)
 		return (-1);
-
 	currhist(NULL, NULL);
 	return (EXIT_SUCCESS);
 }
