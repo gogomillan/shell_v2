@@ -13,10 +13,12 @@
 #include <dirent.h>
 #include <ctype.h>
 #include <signal.h>
+#include <errno.h>
 
 #define HISTORY_FILE ".simple_shell_history"
 
 /* Operator definitions */
+#define ERROR -1
 #define FALSE 0
 #define TRUE  1
 #define GT    2
@@ -94,8 +96,8 @@ int _hlpexit(char **av, lenv_s **lenv, unsigned int *e);
 int _hlphistory(char **av, lenv_s **lenv, unsigned int *e);
 
 /* Functions related with redirection */
+char *_split_oper(char *line, int *fd, size_t *execnt);
 char _find_oper(char *str, char oper);
-char *_split_oper(char *line, int *fd);
 char *_trim(char *str, char c);
 int _dup(int fd, char inout);
 

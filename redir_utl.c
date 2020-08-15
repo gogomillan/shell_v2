@@ -4,28 +4,37 @@
  * _split_oper - Splits the getline result into tokens by opers
  * @line: The command line
  * @fd: The file descriptor
+ * @execnt: the command line counter
  * Return: The line without the redirection
  */
-char *_split_oper(char *line, int *fd)
+char *_split_oper(char *line, int *fd, size_t *execnt)
 {
-	char ret, *t, *f;
+	char msg[80], ret, *t, *f;
+	int err;
+	char *errmsg[2] = {"Permission denied", "Directory nonexistent"};
 
 	ret = _find_oper(line, '>');
 	if (ret == FALSE)
 	{	*fd = -1;
 		return (line);
 	}
-	t = strtok(line, ">");
-	f = strtok(NULL, ">");
-	f = _trim(f, ' ');
-	f = _trim(f, '\t');
-	f = _trim(f, '\n');
-	f = _trim(f, '\r');
+	else if (ret == ERROR)
+	{	sprintf(msg, "%s: %ld: Syntax error: redirection unexpected\n",
+		"./hsh", *execnt);
+		write(STDERR_FILENO, &msg, _strlen(msg)), *fd = 2;
+		return (NULL);
+	}
+	t = strtok(line, ">"), f = strtok(NULL, ">");
+	f = _trim(f, ' '), f = _trim(f, '\t');
+	f = _trim(f, '\n'), f = _trim(f, '\r');
 	/* Open the fileOpen the file for create ">" */
 	*fd = open(f, O_CREAT | O_WRONLY | O_TRUNC,
 		S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (*fd == -1)
-	{   perror("open");
+	{	err = (*(__errno_location()) == 13) ? 0 : 1, *fd = 2;
+		sprintf(msg, "%s: %ld: cannot create %s: %s\n",
+		"./hsh", *execnt, f, errmsg[err]);
+		write(STDERR_FILENO, &msg, _strlen(msg));
 		return (NULL);
 	}
 	/*
@@ -39,7 +48,7 @@ char *_split_oper(char *line, int *fd)
  * _find_oper - Tries to find the derired operator
  * @str: The string to check
  * @oper: The operator ['>' | '<' | ';' | '&' | '|']
- * Return: GT, GT2, LT, LT2, PIPE, SC, AND, OR, FALSE
+ * Return: GT, GT2, LT, LT2, PIPE, SC, AND, OR, FALSE, ERROR
  */
 char _find_oper(char *str, char oper)
 {
@@ -48,14 +57,14 @@ char _find_oper(char *str, char oper)
 	if (str == NULL)
 		return (FALSE);
 
-	while((p = _strchr(p, oper)) != NULL)
+	while ((p = _strchr(p, oper)) != NULL)
 	{
 		if (p != NULL)
 		{
 			if (*(p + 1) == oper)
 			{
 				if (*(p + 2) == oper)
-					return (FALSE);
+					return (ERROR);
 				else
 					return ((oper == '>') ? GT2 : LT2);
 			}
@@ -71,7 +80,7 @@ char _find_oper(char *str, char oper)
 }
 
 /**
- * _trim : Trim characteres at the begging and end of a string
+ * _trim - Trim characteres at the begging and end of a string
  * @str: String
  * @c: Character to trim
  * Return: A pointer to the new position to start the string

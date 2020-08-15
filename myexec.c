@@ -5,7 +5,8 @@
  * @argc: Quantity of parameters
  * @argv: The end NULL list of parameters
  * @lenv: The variables from the environment list
- * @execnt: the counter
+ * @execnt: the command line counter
+ * @fdo: the file descriptor for output
  * Return: Always 0
  */
 int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int fdo)

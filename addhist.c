@@ -10,7 +10,7 @@ int addhist(char **argv)
 	int i = 1, len = 0;
 	commhist_s *head = NULL, *tail = NULL, *node = NULL;
 
-	if (argv[0] == NULL || argv == NULL || argv[1] == NULL)
+	if (head == NULL || argv[0] == NULL || argv == NULL || argv[1] == NULL)
 		return (-1);
 	currhist(&head, &tail);
 	node = malloc(sizeof(commhist_s));
