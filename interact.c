@@ -11,9 +11,10 @@ char **askmem(int argc, char *line);
  */
 int interact(char **av, lenv_s **lenv, size_t *execnt)
 {
-size_t len = 0;
-int read = 1, j, argc = 0, inter = 1, (*f)() = NULL, builtin, ret = 0, fdo = -1;
-char *str1, *t, **argv, *line = NULL, *tmp = NULL, *myline = NULL;
+	size_t len = 0;
+	int read = 1, j, argc = 0, inter = 1, (*f)() = NULL, builtin;
+	int ret = 0, fdo = -1;
+	char *str1, *t, **argv = NULL, *line = NULL, *tmp = NULL, *myline = NULL;
 
 	isatty(STDIN_FILENO) == 0 ? inter = 0 : inter;
 	do {	inter == 1 ?  write(STDOUT_FILENO, "($) ", 4) : inter;
@@ -24,8 +25,8 @@ char *str1, *t, **argv, *line = NULL, *tmp = NULL, *myline = NULL;
 			free(line);
 			return (ret);
 		}
-		if (_split_oper(line, &fdo) == NULL) /* Call to function for > */
-		{	addhist(argv), (*execnt)++;
+		if (_split_oper(line, &fdo, execnt) == NULL) /* Call to function for > */
+		{	ret = fdo, addhist(argv), (*execnt)++, fdo = -1;
 			continue;
 		}
 		myline = _strdup(line), tmp = _strdup(myline);
@@ -47,18 +48,15 @@ char *str1, *t, **argv, *line = NULL, *tmp = NULL, *myline = NULL;
 			if (_strncmp(myline, "exit", 4) == 0 && builtin >= 0)
 			{	free(tmp), free(myline), free(line);
 				if (argv[2] != NULL)
-				{
-					free(argv);
+				{	free(argv);
 					return (builtin);
-				}
-				free(argv);
+				} free(argv);
 				return (ret);
-			}
-			ret = builtin;
-		}
-		else
+			} ret = builtin;
+		} else
 			argc > 2 ? ret = myexec(j, argv, lenv, execnt, fdo) : argc;
 		addhist(argv), free(argv), free(tmp), free(myline), (*execnt)++;
+		argv = NULL, tmp = NULL, myline = NULL;
 		if ((ret == 127 || ret == 126 || ret == 2) && inter == 0)
 		{	free(line);
 			return (ret);
