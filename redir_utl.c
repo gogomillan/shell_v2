@@ -10,7 +10,7 @@
 char *_split_oper(char *line, int *fd, size_t *execnt)
 {
 	char msg[80], ret, *t, *f;
-	int err;
+	int err, flags;
 	char *errmsg[2] = {"Permission denied", "Directory nonexistent"};
 
 	ret = _find_oper(line, '>');
@@ -27,9 +27,13 @@ char *_split_oper(char *line, int *fd, size_t *execnt)
 	t = strtok(line, ">"), f = strtok(NULL, ">");
 	f = _trim(f, ' '), f = _trim(f, '\t');
 	f = _trim(f, '\n'), f = _trim(f, '\r');
-	/* Open the fileOpen the file for create ">" */
-	*fd = open(f, O_CREAT | O_WRONLY | O_TRUNC,
-		S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+
+	if (ret == GT)	/* Open the fileOpen the file for create ">" */
+		flags = O_CREAT | O_WRONLY | O_TRUNC;
+	else			/* Open the fileOpen the file for append ">>" */
+		flags = O_CREAT | O_WRONLY | O_APPEND;
+
+	*fd = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (*fd == -1)
 	{	err = (*(__errno_location()) == 13) ? 0 : 1, *fd = 2;
 		sprintf(msg, "%s: %ld: cannot create %s: %s\n",
