@@ -9,10 +9,10 @@ char **askmem(int argc, char *line);
  * @execnt: the counter
  * Return: Always 0
  */
-int interact(char **av, lenv_s **lenv, unsigned int *execnt)
+int interact(char **av, lenv_s **lenv, size_t *execnt)
 {
 size_t len = 0;
-int read = 1, j, argc = 0, inter = 1, (*f)() = NULL, builtin, ret = 0;
+int read = 1, j, argc = 0, inter = 1, (*f)() = NULL, builtin, ret = 0, fdo = -1;
 char *str1, *t, **argv, *line = NULL, *tmp = NULL, *myline = NULL;
 
 	isatty(STDIN_FILENO) == 0 ? inter = 0 : inter;
@@ -24,8 +24,11 @@ char *str1, *t, **argv, *line = NULL, *tmp = NULL, *myline = NULL;
 			free(line);
 			return (ret);
 		}
-		myline = _strdup(line);
-		tmp = _strdup(myline);
+		if (_split_oper(line, &fdo) == NULL) /* Call to function for > */
+		{	addhist(argv), (*execnt)++;
+			continue;
+		}
+		myline = _strdup(line), tmp = _strdup(myline);
 		for (argc = 1, str1 = tmp; (t = strtok(str1, " \t\n")); argc++, str1 = NULL)
 			if (t == NULL)
 				break;
@@ -54,7 +57,7 @@ char *str1, *t, **argv, *line = NULL, *tmp = NULL, *myline = NULL;
 			ret = builtin;
 		}
 		else
-			argc > 2 ? ret = myexec(j, argv, lenv, execnt) : argc;
+			argc > 2 ? ret = myexec(j, argv, lenv, execnt, fdo) : argc;
 		addhist(argv), free(argv), free(tmp), free(myline), (*execnt)++;
 		if ((ret == 127 || ret == 126 || ret == 2) && inter == 0)
 		{	free(line);

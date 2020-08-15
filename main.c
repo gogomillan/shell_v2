@@ -10,7 +10,7 @@
  */
 int main(int argc, char **argv, char **env)
 {
-	unsigned int execnt = 1; /* Count how many executions */
+	size_t execnt = 1; /* Count how many executions */
 	int read = 0;
 	lenv_s *lenv;
 

@@ -1,0 +1,5 @@
+ls > lista > listita > listota
+cat lista
+cat listita
+cat listota
+rm lista listita listota
