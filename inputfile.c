@@ -8,7 +8,7 @@
   * @execnt: the counter
   * Return: 0
   **/
-int inputfile(int argc, char **argv, lenv_s **lenv, unsigned int *execnt)
+int inputfile(int argc, char **argv, lenv_s **lenv, size_t *execnt)
 {
 	(void) argc;
 	(void) lenv;

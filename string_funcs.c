@@ -1,4 +1,5 @@
 #include "hsh.h"
+
 /**
  * _strlen - this functions prints the lenght of a string
  * @s: string to print.
@@ -85,4 +86,22 @@ int _strncmp(char *s1, char *s2, int n)
 			return (s1[i] - s2[i]);
 	}
 	return (0);
+}
+
+/**
+ * _strchr - Returns a pointer to the first occurence of c char in string s.
+ * @s: The string
+ * @c: The char
+ * Return: A pointer to the position or NULL
+ */
+char *_strchr(char *s, int c)
+{
+	while (*s != '\0')
+	{
+		if (*s == c)
+			return (s);
+		s++;
+	}
+
+	return (NULL);
 }

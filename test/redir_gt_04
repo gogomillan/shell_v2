@@ -1,4 +1,5 @@
 ls
 ls >lista
 ls
+cat lista
 rm lista

@@ -15,6 +15,19 @@
 #include <signal.h>
 
 #define HISTORY_FILE ".simple_shell_history"
+
+/* Operator definitions */
+#define FALSE 0
+#define TRUE  1
+#define GT    2
+#define GT2   3
+#define LT    4
+#define LT2   5
+#define PIPE  6
+#define SC    7
+#define AND   8
+#define OR    9
+
 extern char **environ;
 
 
@@ -55,8 +68,9 @@ typedef struct builtin
 	int (*f)();
 } builtin_s;
 
-int myexec(int argc, char **argv, lenv_s **env, unsigned int *execnt);
-int interact(char **argv, lenv_s **env, unsigned int *execnt);
+int inputfile(int argc, char **argv, lenv_s **lenv, size_t *execnt);
+int interact(char **av, lenv_s **lenv, size_t *execnt);
+int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int fdo);
 void handsigint(int sign);
 char *path(char *name, lenv_s **env);
 int currhist(commhist_s **h, commhist_s **t);
@@ -79,13 +93,18 @@ int _hlpcd(char **av, lenv_s **lenv, unsigned int *e);
 int _hlpexit(char **av, lenv_s **lenv, unsigned int *e);
 int _hlphistory(char **av, lenv_s **lenv, unsigned int *e);
 
+/* Functions related with redirection */
+char _find_oper(char *str, char oper);
+char *_split_oper(char *line, int *fd);
+char *_trim(char *str, char c);
+int _dup(int fd, char inout);
 
 /* strings functions */
-
 int _strlen(char *s);
 char *_strdup(char *str);
 int _strcmp(char *s1, char *s2);
 int _strncmp(char *s1, char *s2, int n);
+char *_strchr(char *s, int c);
 
 /* enviroment funcs */
 size_t print_list(lenv_s **head);
@@ -96,8 +115,6 @@ lenv_s *cenv(char **env);
 void free_list(lenv_s **head);
 char *_getenv(char *name, lenv_s **lenv);
 
-/* input file */
-int inputfile(int argc, char **argv, lenv_s **lenv, unsigned int *execnt);
 
 /* variables */
 char **check_variable(char **argv, lenv_s **lenv);
