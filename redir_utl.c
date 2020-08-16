@@ -10,10 +10,12 @@
 char *_split_oper(char *line, int *fd, size_t *execnt)
 {
 	int err, flags;
-	char *errmsg[2] = {"Permission denied", "Directory nonexistent"};
+	char *errmsg[2] = {"Permission denied", "Directory nonexistent"}, *opt = "><";
 	char msg[80], ret, *t, *f;
 
-	ret = _find_oper(line, '>');
+	ret = _find_oper(line, opt[0]);
+	if (ret == FALSE)
+		ret = _find_oper(line, opt[1]);
 	if (ret == ERROR)
 	{	sprintf(msg, "%s: %ld: Syntax error: redirection unexpected\n",
 		"./hsh", *execnt);
@@ -24,16 +26,20 @@ char *_split_oper(char *line, int *fd, size_t *execnt)
 	{	*(fd + WRITE_END) = CLOSED;
 		return (line);
 	}
-	t = strtok(line, ">"), f = strtok(NULL, ">");
+	t = strtok(line, opt), f = strtok(NULL, opt);
 	f = _trim(f, ' '), f = _trim(f, '\t');
 	f = _trim(f, '\n'), f = _trim(f, '\r');
 
 	if (ret == GT)	/* Open the fileOpen the file for create ">" */
 		flags = O_CREAT | O_WRONLY | O_TRUNC;
+	if (ret == LT)
+		flags = O_RDONLY;
 	else			/* Open the fileOpen the file for append ">>" */
 		flags = O_CREAT | O_WRONLY | O_APPEND;
 
 	*(fd + WRITE_END) = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	if (ret == LT)
+		*(fd + STDIN_STDOUT) = STDIN_FILENO;
 	if (*(fd + WRITE_END) == -1)
 	{	err = (*(__errno_location()) == 13) ? 0 : 1, *(fd + WRITE_END) = 2;
 		sprintf(msg, "%s: %ld: cannot create %s: %s\n",
