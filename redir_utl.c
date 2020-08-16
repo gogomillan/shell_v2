@@ -9,20 +9,20 @@
  */
 char *_split_oper(char *line, int *fd, size_t *execnt)
 {
-	char msg[80], ret, *t, *f;
 	int err, flags;
 	char *errmsg[2] = {"Permission denied", "Directory nonexistent"};
+	char msg[80], ret, *t, *f;
 
 	ret = _find_oper(line, '>');
-	if (ret == FALSE)
-	{	*fd = -1;
-		return (line);
-	}
-	else if (ret == ERROR)
+	if (ret == ERROR)
 	{	sprintf(msg, "%s: %ld: Syntax error: redirection unexpected\n",
 		"./hsh", *execnt);
-		write(STDERR_FILENO, &msg, _strlen(msg)), *fd = 2;
+		write(STDERR_FILENO, &msg, _strlen(msg)), *(fd + WRITE_END) = 2;
 		return (NULL);
+	}
+	else if (ret == FALSE)
+	{	*(fd + WRITE_END) = CLOSED;
+		return (line);
 	}
 	t = strtok(line, ">"), f = strtok(NULL, ">");
 	f = _trim(f, ' '), f = _trim(f, '\t');
@@ -33,18 +33,14 @@ char *_split_oper(char *line, int *fd, size_t *execnt)
 	else			/* Open the fileOpen the file for append ">>" */
 		flags = O_CREAT | O_WRONLY | O_APPEND;
 
-	*fd = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-	if (*fd == -1)
-	{	err = (*(__errno_location()) == 13) ? 0 : 1, *fd = 2;
+	*(fd + WRITE_END) = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	if (*(fd + WRITE_END) == -1)
+	{	err = (*(__errno_location()) == 13) ? 0 : 1, *(fd + WRITE_END) = 2;
 		sprintf(msg, "%s: %ld: cannot create %s: %s\n",
 		"./hsh", *execnt, f, errmsg[err]);
 		write(STDERR_FILENO, &msg, _strlen(msg));
 		return (NULL);
 	}
-	/*
-	 * sh: 1: cannot create tmp1/lista: Directory nonexistent
-	 * sh: 2: cannot create tmp/lista: Permission denied
-	 */
 	return (t);
 }
 
