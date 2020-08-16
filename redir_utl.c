@@ -14,6 +14,7 @@ char *_split_oper(char *line, int *fd, size_t *execnt)
 	char msg[80], ret, *t, *f;
 
 	ret = _find_oper(line, opt[0]);
+	*(fd + STDIN_STDOUT) = STDOUT_FILENO;
 	if (ret == FALSE)
 		ret = _find_oper(line, opt[1]);
 	if (ret == ERROR)
