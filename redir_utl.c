@@ -14,7 +14,7 @@ char *_split_oper(char *line, int *fd, size_t *execnt)
 	char msg[80], ret, *t, *f;
 
 	ret = _find_oper(line, opt[0]);
-	*(fd + STDIN_STDOUT) = STDOUT_FILENO;
+	*(fd + STDIN_OUT) = STDOUT_FILENO;
 	if (ret == FALSE)
 		ret = _find_oper(line, opt[1]);
 	if (ret == ERROR)
@@ -33,14 +33,14 @@ char *_split_oper(char *line, int *fd, size_t *execnt)
 
 	if (ret == GT)	/* Open the fileOpen the file for create ">" */
 		flags = O_CREAT | O_WRONLY | O_TRUNC;
-	if (ret == LT)
+	else if (ret == LT)
 		flags = O_RDONLY;
 	else			/* Open the fileOpen the file for append ">>" */
 		flags = O_CREAT | O_WRONLY | O_APPEND;
 
 	*(fd + WRITE_END) = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (ret == LT)
-		*(fd + STDIN_STDOUT) = STDIN_FILENO;
+		*(fd + STDIN_OUT) = STDIN_FILENO;
 	if (*(fd + WRITE_END) == -1)
 	{	err = (*(__errno_location()) == 13) ? 0 : 1, *(fd + WRITE_END) = 2;
 		sprintf(msg, "%s: %ld: cannot create %s: %s\n",

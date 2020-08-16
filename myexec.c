@@ -41,7 +41,7 @@ int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int *fd)
 		return (1);
 	}
 	else if (pid == 0)
-	{	ret = (fd[WRITE_END] != CLOSED) ? _dup(fd[WRITE_END], fd[STDIN_STDOUT]) : ret;
+	{	ret = (fd[WRITE_END] != CLOSED) ? _dup(fd[WRITE_END], fd[STDIN_OUT]) : ret;
 		if (execve(sentence, (argv + 1), env) == -1)
 			exit(127);
 	} else
