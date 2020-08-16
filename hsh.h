@@ -29,6 +29,10 @@
 #define SC    7
 #define AND   8
 #define OR    9
+/* Redirections */
+#define CLOSED    -1
+#define READ_END   0
+#define WRITE_END  1
 
 extern char **environ;
 
@@ -72,7 +76,7 @@ typedef struct builtin
 
 int inputfile(int argc, char **argv, lenv_s **lenv, size_t *execnt);
 int interact(char **av, lenv_s **lenv, size_t *execnt);
-int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int fdo);
+int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int *fd);
 void handsigint(int sign);
 char *path(char *name, lenv_s **env);
 int currhist(commhist_s **h, commhist_s **t);

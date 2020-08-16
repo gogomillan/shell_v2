@@ -6,10 +6,10 @@
  * @argv: The end NULL list of parameters
  * @lenv: The variables from the environment list
  * @execnt: the command line counter
- * @fdo: the file descriptor for output
+ * @fd: the file descriptor for output
  * Return: Always 0
  */
-int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int fdo)
+int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int *fd)
 {
 	pid_t pid;
 	int status, ret = 0, es, isnull = 0; /* ret = return, es = exit status */
@@ -41,7 +41,7 @@ int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int fdo)
 		return (1);
 	}
 	else if (pid == 0)
-	{	ret = (fdo != -1) ? _dup(fdo, STDOUT_FILENO) : ret;
+	{	ret = (fd[WRITE_END] != CLOSED) ? _dup(fd[WRITE_END], STDOUT_FILENO) : ret;
 		if (execve(sentence, (argv + 1), env) == -1)
 			exit(127);
 	} else

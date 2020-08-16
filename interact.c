@@ -13,7 +13,7 @@ int interact(char **av, lenv_s **lenv, size_t *execnt)
 {
 	size_t len = 0;
 	int read = 1, j, argc = 0, inter = 1, (*f)() = NULL, builtin;
-	int ret = 0, fdo = -1;
+	int ret = 0, fd[2] = {CLOSED, CLOSED};
 	char *str1, *t, **argv = NULL, *line = NULL, *tmp = NULL, *myline = NULL;
 
 	isatty(STDIN_FILENO) == 0 ? inter = 0 : inter;
@@ -25,8 +25,8 @@ int interact(char **av, lenv_s **lenv, size_t *execnt)
 			free(line);
 			return (ret);
 		}
-		if (_split_oper(line, &fdo, execnt) == NULL) /* Call to function for > */
-		{	ret = fdo, addhist(argv), (*execnt)++, fdo = -1;
+		if (_split_oper(line, fd, execnt) == NULL) /* Call to function for > >> */
+		{	ret = fd[WRITE_END], addhist(argv), (*execnt)++, fd[WRITE_END] = CLOSED;
 			continue;
 		}
 		myline = _strdup(line), tmp = _strdup(myline);
@@ -54,7 +54,7 @@ int interact(char **av, lenv_s **lenv, size_t *execnt)
 				return (ret);
 			} ret = builtin;
 		} else
-			argc > 2 ? ret = myexec(j, argv, lenv, execnt, fdo) : argc;
+			argc > 2 ? ret = myexec(j, argv, lenv, execnt, fd) : argc;
 		addhist(argv), free(argv), free(tmp), free(myline), (*execnt)++;
 		argv = NULL, tmp = NULL, myline = NULL;
 		if ((ret == 127 || ret == 126 || ret == 2) && inter == 0)
