@@ -109,6 +109,7 @@ char *_trim(char *str, char c);
 int _dup(int fd, char inout);
 void _unexpected_redir(size_t execnt);
 int _rdheredoc(char *f, int inter);
+int _def_flags(char *, int *, char, int, int *, char **, char **);
 
 /* strings functions */
 int _strlen(char *s);
