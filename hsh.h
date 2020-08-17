@@ -103,12 +103,12 @@ int _hlpexit(char **av, lenv_s **lenv, unsigned int *e);
 int _hlphistory(char **av, lenv_s **lenv, unsigned int *e);
 
 /* Functions related with redirection */
-char *_split_oper(char *line, int *fd, size_t *execnt);
+char *_split_oper(char *line, int *fd, size_t *execnt, int inter);
 char _find_oper(char *str, char oper);
 char *_trim(char *str, char c);
 int _dup(int fd, char inout);
 void _unexpected_redir(size_t execnt);
-int _rdheredoc(char *f);
+int _rdheredoc(char *f, int inter);
 
 /* strings functions */
 int _strlen(char *s);

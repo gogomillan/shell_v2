@@ -25,7 +25,7 @@ int interact(char **av, lenv_s **lenv, size_t *execnt)
 			free(line);
 			return (ret);
 		}
-		if (_split_oper(line, fd, execnt) == NULL) /* Call to function for > >> */
+		if (_split_oper(line, fd, execnt, inter) == NULL) /* Redirections > >>< << */
 		{	ret = fd[WRITE_END], addhist(argv), (*execnt)++, fd[WRITE_END] = CLOSED;
 			continue;
 		}
