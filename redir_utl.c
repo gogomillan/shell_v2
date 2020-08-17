@@ -159,12 +159,12 @@ int _rdheredoc(char *f, int inter)
 		if (inter)
 			write(STDOUT_FILENO, "> ", 2);
 		ret = getline(&buf, &len, stdin);
-		if (ret > 0 && _strncmp(buf, f, strlen(buf) - 1) != 0)
-			if (write(fd, buf, strlen(buf)) <= 0)
+		if (ret > 0 && _strncmp(buf, f, _strlen(buf) - 1) != 0)
+			if (write(fd, buf, _strlen(buf)) <= 0)
 			{   perror("write");
 				return (ERROR);
 			}
-	} while (ret > 0 && strncmp(buf, f, strlen(buf) - 1) != 0);
+	} while (ret > 0 && _strncmp(buf, f, _strlen(buf) - 1) != 0);
 	fflush(stdin), fflush(stdout), free(buf);
 	close(fd);
 	return (fd);
