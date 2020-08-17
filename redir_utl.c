@@ -10,13 +10,14 @@
  */
 char *_split_oper(char *line, int *fd, size_t *execnt, int inter)
 {
-	int err, flags;
+	int err, flags, cf;
 	char *errmsg[2] = {"Permission denied", "Directory nonexistent"}, *opt = "><";
-	char msg[80], ret, *t, *f;
+	char msg[80], ret, *t = NULL, *f = NULL;
 
 	ret = _find_oper(line, opt[0]), *(fd + STDIN_OUT) = STDOUT_FILENO;
 	if (ret == FALSE)
 		ret = _find_oper(line, opt[1]);
+
 	if (ret == ERROR)
 	{	 _unexpected_redir(*execnt), *(fd + WRITE_END) = 2;
 		return (NULL);
@@ -25,19 +26,11 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter)
 	{	*(fd + WRITE_END) = CLOSED;
 		return (line);
 	}
-	t = strtok(line, opt), f = strtok(NULL, opt), f = _trim(f, ' ');
-	f = _trim(f, '\t'), f = _trim(f, '\n'), f = _trim(f, '\r');
-	if (ret == GT)	/* Open the fileOpen the file for create ">" */
-		flags = O_CREAT | O_WRONLY | O_TRUNC;
-	else if (ret == LT)
-		flags = O_RDONLY;
-	else if (ret == LT2)
-	{	*(fd + LT2_OUT) = _rdheredoc(f, inter), flags = O_RDONLY, f = TMP_FILE;
-		if (*(fd + LT2_OUT) == -1)
-			return (NULL);
-	}
-	else			/* Open the fileOpen the file for append ">>" */
-		flags = O_CREAT | O_WRONLY | O_APPEND;
+
+	cf = _def_flags(line, fd, ret, inter, &flags, &t, &f);
+	if (cf == ERROR)
+		return (NULL);
+
 	*(fd + WRITE_END) = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (ret == LT || ret == LT2)
 		*(fd + STDIN_OUT) = STDIN_FILENO;
@@ -48,7 +41,11 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter)
 		write(STDERR_FILENO, &msg, _strlen(msg));
 		return (NULL);
 	}
-	return (t);
+	if (cf)
+	{	close(*(fd + WRITE_END)), *(fd + WRITE_END) = 0;
+		return (NULL);
+	}
+	return (line);
 }
 
 /**
@@ -95,6 +92,11 @@ char _find_oper(char *str, char oper)
 char *_trim(char *str, char c)
 {
 	char *h = str, *t = str; /* Head and Tail of the string */
+
+	if (str == NULL)
+		return (str);
+	if (_strlen(str) <= 0)
+		return (str);
 
 	while (*t++ != '\0')
 		if (*h == c)
