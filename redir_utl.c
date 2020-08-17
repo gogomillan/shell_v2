@@ -160,7 +160,7 @@ int _rdheredoc(char *f)
 				return (ERROR);
 			}
 	} while (ret > 0 && strncmp(buf, f, strlen(buf) - 1) != 0);
-	free(buf);
+	fflush(stdin), fflush(stdout), free(buf);
 	close(fd);
 	return (fd);
 }
