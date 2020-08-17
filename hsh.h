@@ -33,7 +33,9 @@
 #define CLOSED    -1
 #define READ_END   0
 #define WRITE_END  1
-#define STDIN_OUT 2
+#define STDIN_OUT  2
+#define LT2_OUT    3
+#define TMP_FILE "mytemp.XXXXXX.JMGG.Holbies"
 
 extern char **environ;
 
@@ -105,6 +107,8 @@ char *_split_oper(char *line, int *fd, size_t *execnt);
 char _find_oper(char *str, char oper);
 char *_trim(char *str, char c);
 int _dup(int fd, char inout);
+void _unexpected_redir(size_t execnt);
+int _rdheredoc(char *f);
 
 /* strings functions */
 int _strlen(char *s);
