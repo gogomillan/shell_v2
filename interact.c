@@ -13,7 +13,7 @@ int interact(char **av, lenv_s **lenv, size_t *execnt)
 {
 	size_t len = 0;
 	int read = 1, j, argc = 0, inter = 1, (*f)() = NULL, builtin;
-	int ret = 0, fd[3] = {CLOSED, CLOSED, STDOUT_FILENO};
+	int ret = 0, fd[4] = {CLOSED, CLOSED, STDOUT_FILENO, CLOSED};
 	char *str1, *t, **argv = NULL, *line = NULL, *tmp = NULL, *myline = NULL;
 
 	isatty(STDIN_FILENO) == 0 ? inter = 0 : inter;

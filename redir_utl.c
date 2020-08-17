@@ -13,33 +13,32 @@ char *_split_oper(char *line, int *fd, size_t *execnt)
 	char *errmsg[2] = {"Permission denied", "Directory nonexistent"}, *opt = "><";
 	char msg[80], ret, *t, *f;
 
-	ret = _find_oper(line, opt[0]);
-	*(fd + STDIN_OUT) = STDOUT_FILENO;
+	ret = _find_oper(line, opt[0]), *(fd + STDIN_OUT) = STDOUT_FILENO;
 	if (ret == FALSE)
 		ret = _find_oper(line, opt[1]);
 	if (ret == ERROR)
-	{	sprintf(msg, "%s: %ld: Syntax error: redirection unexpected\n",
-		"./hsh", *execnt);
-		write(STDERR_FILENO, &msg, _strlen(msg)), *(fd + WRITE_END) = 2;
+	{	 _unexpected_redir(*execnt), *(fd + WRITE_END) = 2;
 		return (NULL);
 	}
 	else if (ret == FALSE)
 	{	*(fd + WRITE_END) = CLOSED;
 		return (line);
 	}
-	t = strtok(line, opt), f = strtok(NULL, opt);
-	f = _trim(f, ' '), f = _trim(f, '\t');
-	f = _trim(f, '\n'), f = _trim(f, '\r');
-
+	t = strtok(line, opt), f = strtok(NULL, opt), f = _trim(f, ' ');
+	f = _trim(f, '\t'), f = _trim(f, '\n'), f = _trim(f, '\r');
 	if (ret == GT)	/* Open the fileOpen the file for create ">" */
 		flags = O_CREAT | O_WRONLY | O_TRUNC;
 	else if (ret == LT)
 		flags = O_RDONLY;
+	else if (ret == LT2)
+	{	*(fd + LT2_OUT) = _rdheredoc(f), flags = O_RDONLY, f = TMP_FILE;
+		if (*(fd + LT2_OUT) == -1)
+			return (NULL);
+	}
 	else			/* Open the fileOpen the file for append ">>" */
 		flags = O_CREAT | O_WRONLY | O_APPEND;
-
 	*(fd + WRITE_END) = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-	if (ret == LT)
+	if (ret == LT || ret == LT2)
 		*(fd + STDIN_OUT) = STDIN_FILENO;
 	if (*(fd + WRITE_END) == -1)
 	{	err = (*(__errno_location()) == 13) ? 0 : 1, *(fd + WRITE_END) = 2;
@@ -128,5 +127,40 @@ int _dup(int fd, char inout)
 			return (-1);
 		}
 	}
+	return (fd);
+}
+
+/**
+ * _rdheredoc - read the input for the heredoc redirection
+ * @f: Token's name
+ * Return: File descripto to the tmp file.
+ */
+int _rdheredoc(char *f)
+{
+	int fd, ret;
+	char *buf = NULL;
+	size_t len = 0;
+
+	if (f == NULL)
+		return (ERROR);
+	/* Open the fileOpen the file for tmp */
+	fd = open(TMP_FILE, O_CREAT | O_RDWR | O_TRUNC,
+		S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	if (fd == ERROR)
+	{   perror("open");
+		return (ERROR);
+	}
+	/* Take the keyboard input */
+	do {
+		printf("> ");
+		ret = getline(&buf, &len, stdin);
+		if (ret > 0 && _strncmp(buf, f, strlen(buf) - 1) != 0)
+			if (write(fd, buf, strlen(buf)) <= 0)
+			{   perror("write");
+				return (ERROR);
+			}
+	} while (ret > 0 && strncmp(buf, f, strlen(buf) - 1) != 0);
+	free(buf);
+	close(fd);
 	return (fd);
 }

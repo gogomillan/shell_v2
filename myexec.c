@@ -12,7 +12,7 @@
 int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int *fd)
 {
 	pid_t pid;
-	int status, ret = 0, es, isnull = 0; /* ret = return, es = exit status */
+	int status, ret = 0, es = 0, isnull = 0; /* ret = return, es = exit status */
 	char msg[80], *sentence = NULL, *pathos, *tmp = NULL, **env = menv(lenv);
 	struct stat st;
 
@@ -26,8 +26,7 @@ int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int *fd)
 		sentence = path(argv[1], lenv);
 	sentence != NULL ? stat(sentence, &st) : (isnull = 1);
 	if (((st.st_mode & S_IFMT) == S_IFDIR) && isnull == 0)
-	{
-		sprintf(msg, "%s: %ld: %s: Permission denied\n", argv[0], *execnt, argv[1]);
+	{	sprintf(msg, "%s: %ld: %s: Permission denied\n", argv[0], *execnt, argv[1]);
 		write(STDERR_FILENO, &msg, _strlen(msg)), free(env), free(sentence);
 		return (126);
 	}
@@ -48,6 +47,7 @@ int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int *fd)
 	{	wait(&status);
 		if (WIFEXITED(status))
 			es = WEXITSTATUS(status);
-	} free(sentence), free(env);
+	} free(sentence), free(env), (fd[LT2_OUT] != CLOSED) ? unlink(TMP_FILE) : es;
+	fd[LT2_OUT] = CLOSED;
 	return (es);
 }
