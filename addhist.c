@@ -33,7 +33,7 @@ int addhist(char **argv)
 	for (i = 1; argv[i] != NULL; i++)
 	{
 		if (i != 1)
-			sprintf(node->cmd, "%s ", node->cmd);
+			sprintf(node->cmd, "%s%c", node->cmd, ' ');
 		sprintf(node->cmd, "%s%s", node->cmd, argv[i]);
 	}
 	node->next = NULL;
