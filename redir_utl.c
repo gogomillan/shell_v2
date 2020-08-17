@@ -5,9 +5,10 @@
  * @line: The command line
  * @fd: The file descriptor
  * @execnt: the command line counter
+ * @inter: Interactive mode [0 | 1]
  * Return: The line without the redirection
  */
-char *_split_oper(char *line, int *fd, size_t *execnt)
+char *_split_oper(char *line, int *fd, size_t *execnt, int inter)
 {
 	int err, flags;
 	char *errmsg[2] = {"Permission denied", "Directory nonexistent"}, *opt = "><";
@@ -31,7 +32,7 @@ char *_split_oper(char *line, int *fd, size_t *execnt)
 	else if (ret == LT)
 		flags = O_RDONLY;
 	else if (ret == LT2)
-	{	*(fd + LT2_OUT) = _rdheredoc(f), flags = O_RDONLY, f = TMP_FILE;
+	{	*(fd + LT2_OUT) = _rdheredoc(f, inter), flags = O_RDONLY, f = TMP_FILE;
 		if (*(fd + LT2_OUT) == -1)
 			return (NULL);
 	}
@@ -133,9 +134,10 @@ int _dup(int fd, char inout)
 /**
  * _rdheredoc - read the input for the heredoc redirection
  * @f: Token's name
+ * @inter: Intereactive mode [0 | 1]
  * Return: File descripto to the tmp file.
  */
-int _rdheredoc(char *f)
+int _rdheredoc(char *f, int inter)
 {
 	int fd, ret;
 	char *buf = NULL;
@@ -152,7 +154,8 @@ int _rdheredoc(char *f)
 	}
 	/* Take the keyboard input */
 	do {
-		printf("> ");
+		if (inter)
+			write(STDOUT_FILENO, "> ", 2);
 		ret = getline(&buf, &len, stdin);
 		if (ret > 0 && _strncmp(buf, f, strlen(buf) - 1) != 0)
 			if (write(fd, buf, strlen(buf)) <= 0)
