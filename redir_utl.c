@@ -142,7 +142,7 @@ int _dup(int fd, char inout)
 int _rdheredoc(char *f, int inter)
 {
 	int fd, ret;
-	char *buf = NULL;
+	char *buf = NULL, save;
 	size_t len = 0;
 
 	if (f == NULL)
@@ -159,12 +159,18 @@ int _rdheredoc(char *f, int inter)
 		if (inter)
 			write(STDOUT_FILENO, "> ", 2);
 		ret = getline(&buf, &len, stdin);
-		if (ret > 0 && _strncmp(buf, f, _strlen(buf) - 1) != 0)
+		save = buf[_strlen(buf) - 1];
+		buf[_strlen(buf) - 1] = '\0';
+		if (ret > 0 && _strncmp(buf, f, _strlen(f)) != 0)
+		{
+			buf[_strlen(buf)] = save;
 			if (write(fd, buf, _strlen(buf)) <= 0)
 			{   perror("write");
 				return (ERROR);
 			}
-	} while (ret > 0 && _strncmp(buf, f, _strlen(buf) - 1) != 0);
+			buf[_strlen(buf) - 1] = '\0';
+		}
+	} while (ret > 0 && _strncmp(buf, f, _strlen(f)) != 0);
 	fflush(stdin), fflush(stdout), free(buf);
 	close(fd);
 	return (fd);
