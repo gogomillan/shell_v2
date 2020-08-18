@@ -40,7 +40,8 @@ int interact(char **av, lenv_s **lenv, size_t *execnt)
 			} ret = builtin;
 		} else							/* Try external command */
 			argc > 2 ? ret = myexec(j, argv, lenv, execnt, fd) : argc;
-		addhist(argv), free(argv), free(myln), (*execnt)++, argv = NULL; /* Historical & clean */
+		addhist(argv);										/* Resgister the history */
+		free(argv), free(myln), (*execnt)++, argv = NULL;	/* Cleaning */
 		if ((ret == 127 || ret == 126 || ret == 2) && inter == 0)
 		{	free(line);										/* When these exit status */
 			return (ret);
@@ -70,7 +71,7 @@ int _bld_exec_stack(char *line, char **ml, int *argc, char ***argv, char *av_0)
 	/* Ask for memory */
 	av = askmem(++ac + 2, myline);
 	if (av == NULL)
-	{	free(tmp), free(myline); 
+	{	free(tmp), free(myline);
 		return (ERROR);
 	}
 	/* Store the program name */
@@ -86,7 +87,7 @@ int _bld_exec_stack(char *line, char **ml, int *argc, char ***argv, char *av_0)
 	*argv = av, *argc = ac;
 	/* Cleaning */
 	free(tmp);
-	*ml = myline; 
+	*ml = myline;
 
 	return (j);
 }
