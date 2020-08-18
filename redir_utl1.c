@@ -41,6 +41,7 @@ void _cannot_create(char *f, size_t execnt)
  * _def_flags - Define flags for redirection
  * @line: The command line
  * @fd: The file descriptors array for redirection
+ * @cmds: The commands
  * @re: What symbol "> >> < <<"
  * @in: Interactive [0 | 1]
  * @flag: Flags
@@ -48,11 +49,11 @@ void _cannot_create(char *f, size_t execnt)
  * @f: Token to file name
  * Return: Erase the file [TRUE | FALSE] or ERROR
  */
-int _def_flags(char *line, int *fd, char re, int in,
+int _def_flags(char *line, int *fd, char **cmds, char re, int in,
 		int *flag, char **t, char **f)
 {
-	int ret = FALSE;
-	char *opt = "><", *tmp = NULL;
+	int ret = FALSE, pipefd[2];
+	char *opt = "><|", *tmp = NULL;
 
 	tmp = _strdup(line), *t = strtok(tmp, opt), *f = strtok(NULL, opt);
 	if (*t != NULL && *f != NULL)	/* Special contitions > file or < file */
@@ -67,13 +68,21 @@ int _def_flags(char *line, int *fd, char re, int in,
 		*flag = O_CREAT | O_WRONLY | O_TRUNC;
 	else if (re == LT)		/* Open the file for read "<" */
 		*flag = O_RDONLY;
-	else if (re == LT2)	/*  Open tmp file for << */
+	else if (re == LT2)		/* Open tmp file for << */
 	{	*(fd + LT2_OUT) = _rdheredoc(*f, in), *flag = O_RDONLY, *f = TMP_FILE;
 		if (*(fd + LT2_OUT) == ERROR)
 			return (ERROR);
 	}
-	else					/* Open the file for append ">>" */
+	else if (re == GT2)		/* Open the file for append ">>" */
 		*flag = O_CREAT | O_WRONLY | O_APPEND;
+	else if (re == PIPE)	/* Create the pipe */
+	{	cmds[0] = *t, cmds[1] = *f;
+		if (pipe(pipefd) == -1)
+		{   perror("pipe");
+			return (ERROR);
+		}	fd[READ_END] = pipefd[READ_END], fd[WRITE_END] = pipefd[WRITE_END];
+		return (PIPE);
+	}
 
 	return (ret);
 }
