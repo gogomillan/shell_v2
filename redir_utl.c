@@ -35,7 +35,7 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter)
 	if (ret == LT || ret == LT2)
 		*(fd + STDIN_OUT) = STDIN_FILENO;
 	if (*(fd + WRITE_END) == -1)
-	{	_cannot_create(f, *execnt), *(fd + WRITE_END) = 2;
+	{	_cannot_create(ret, f, *execnt), *(fd + WRITE_END) = 2;
 		return (NULL);
 	}
 	if (cf)

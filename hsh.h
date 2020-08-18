@@ -108,7 +108,7 @@ char _find_oper(char *str, char oper);
 char *_trim(char *str, char c);
 int _dup(int fd, char inout);
 void _unexpected_redir(size_t execnt);
-void _cannot_create(char *f, size_t execnt);
+void _cannot_create(char ret, char *f, size_t execnt);
 int _rdheredoc(char *f, int inter);
 int _def_flags(char *, int *, char, int, int *, char **, char **);
 
