@@ -16,14 +16,17 @@ void _unexpected_redir(size_t execnt)
 
 /**
  * _cannot_create - Message for Syntax error: cannot create
+ * @ret: The operator
  * @f: The fine name
  * @execnt: Command line counter
  * Return: Nothing
  */
-void _cannot_create(char *f, size_t execnt)
+void _cannot_create(char ret, char *f, size_t execnt)
 {
 	char msg[161];
-	char *errmsg[2] = {"Permission denied", "Directory nonexistent"};
+	char *errmsg[3] = {"Permission denied", "Directory nonexistent",
+						"No such file"};
+	char *o_c_msg[2] = {"cannot create", "cannot open"};
 	int err;
 
 	err = *(__errno_location());
@@ -31,7 +34,11 @@ void _cannot_create(char *f, size_t execnt)
 		err = 0;
 	else
 		err = 1;
-	sprintf(msg, "%s: %ld: cannot create %s: %s\n", "./hsh", execnt,
+	if (ret == LT)
+		err = 2, ret = 1;
+	else
+		ret = 0;
+	sprintf(msg, "%s: %ld: %s %s: %s\n", "./hsh", execnt, o_c_msg[(int)ret],
 	f, errmsg[err]);
 	write(STDERR_FILENO, &msg, _strlen(msg));
 }
