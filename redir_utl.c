@@ -4,23 +4,19 @@
  * _split_oper - Splits the getline result into tokens by opers
  * @line: The command line
  * @fd: The file descriptor
- * @cmds: The commands from command line
  * @execnt: the command line counter
  * @inter: Interactive mode [0 | 1]
  * Return: The line without the redirection
  */
-char *_split_oper(char *line, int *fd, char **cmds, size_t *execnt, int inter)
+char *_split_oper(char *line, int *fd, size_t *execnt, int inter)
 {
-	int flags, rdf;
-	char *opt = "><|", ret, *t = NULL, *f = NULL;
+	int err, flags, cf;
+	char *errmsg[2] = {"Permission denied", "Directory nonexistent"}, *opt = "><";
+	char msg[80], ret, *t = NULL, *f = NULL;
 
-	/* Looking for operators */
-	*(fd + STDIN_OUT) = STDOUT_FILENO;
-	ret = _find_oper(line, opt[0]);					/* > */
+	ret = _find_oper(line, opt[0]), *(fd + STDIN_OUT) = STDOUT_FILENO;
 	if (ret == FALSE)
-		ret = _find_oper(line, opt[1]);				/* < */
-	if (ret == FALSE)
-		ret = _find_oper(line, opt[2]);				/* | */
+		ret = _find_oper(line, opt[1]);
 
 	if (ret == ERROR)
 	{	 _unexpected_redir(*execnt), *(fd + WRITE_END) = 2;
@@ -31,20 +27,21 @@ char *_split_oper(char *line, int *fd, char **cmds, size_t *execnt, int inter)
 		return (line);
 	}
 
-	rdf = _def_flags(line, fd, cmds, ret, inter, &flags, &t, &f);
-	if (rdf == ERROR)
+	cf = _def_flags(line, fd, ret, inter, &flags, &t, &f);
+	if (cf == ERROR)
 		return (NULL);
-	if (rdf == PIPE)
-		return (line);
 
 	*(fd + WRITE_END) = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (ret == LT || ret == LT2)
 		*(fd + STDIN_OUT) = STDIN_FILENO;
 	if (*(fd + WRITE_END) == -1)
-	{	_cannot_create(f, *execnt), *(fd + WRITE_END) = 2;
+	{	err = (*(__errno_location()) == 13) ? 0 : 1, *(fd + WRITE_END) = 2;
+		sprintf(msg, "%s: %ld: cannot create %s: %s\n",
+		"./hsh", *execnt, f, errmsg[err]);
+		write(STDERR_FILENO, &msg, _strlen(msg));
 		return (NULL);
 	}
-	if (rdf == TRUE)
+	if (cf)
 	{	close(*(fd + WRITE_END)), *(fd + WRITE_END) = 0;
 		return (NULL);
 	}
@@ -54,30 +51,30 @@ char *_split_oper(char *line, int *fd, char **cmds, size_t *execnt, int inter)
 /**
  * _find_oper - Tries to find the derired operator
  * @str: The string to check
- * @op: The operator ['>' | '<' | ';' | '&' | '|']
+ * @oper: The operator ['>' | '<' | ';' | '&' | '|']
  * Return: GT, GT2, LT, LT2, PIPE, SC, AND, OR, FALSE, ERROR
  */
-char _find_oper(char *str, char op)
+char _find_oper(char *str, char oper)
 {
 	char *p = str;
 
 	if (str == NULL)
 		return (FALSE);
 
-	while ((p = _strchr(p, op)) != NULL)
+	while ((p = _strchr(p, oper)) != NULL)
 	{
 		if (p != NULL)
 		{
-			if (*(p + 1) == op)
+			if (*(p + 1) == oper)
 			{
-				if (*(p + 2) == op)
+				if (*(p + 2) == oper)
 					return (ERROR);
 				else
-					return ((op == '>') ? GT2 : ((op == '<') ? LT2 : OR));
+					return ((oper == '>') ? GT2 : LT2);
 			}
 			else
 			{
-				return ((op == '>') ? GT : ((op == '<') ? LT : PIPE));
+				return ((oper == '>') ? GT : LT);
 			}
 		}
 		p++;
@@ -145,7 +142,7 @@ int _dup(int fd, char inout)
 int _rdheredoc(char *f, int inter)
 {
 	int fd, ret;
-	char *buf = NULL, save;
+	char *buf = NULL;
 	size_t len = 0;
 
 	if (f == NULL)
@@ -162,17 +159,12 @@ int _rdheredoc(char *f, int inter)
 		if (inter)
 			write(STDOUT_FILENO, "> ", 2);
 		ret = getline(&buf, &len, stdin);
-		save = buf[_strlen(buf) - 1], buf[_strlen(buf) - 1] = '\0';
-		if (ret > 0 && _strcmp(buf, f) != 0)
-		{
-			buf[_strlen(buf)] = save;
+		if (ret > 0 && _strncmp(buf, f, _strlen(buf) - 1) != 0)
 			if (write(fd, buf, _strlen(buf)) <= 0)
 			{   perror("write");
 				return (ERROR);
 			}
-			buf[_strlen(buf) - 1] = '\0';
-		}
-	} while (ret > 0 && _strcmp(buf, f) != 0);
+	} while (ret > 0 && _strncmp(buf, f, _strlen(buf) - 1) != 0);
 	fflush(stdin), fflush(stdout), free(buf);
 	close(fd);
 	return (fd);
