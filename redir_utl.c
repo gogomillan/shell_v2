@@ -4,18 +4,23 @@
  * _split_oper - Splits the getline result into tokens by opers
  * @line: The command line
  * @fd: The file descriptor
+ * @cmds: The commands from command line
  * @execnt: the command line counter
  * @inter: Interactive mode [0 | 1]
  * Return: The line without the redirection
  */
-char *_split_oper(char *line, int *fd, size_t *execnt, int inter)
+char *_split_oper(char *line, int *fd, char **cmds, size_t *execnt, int inter)
 {
 	int flags, rdf;
-	char *opt = "><", ret, *t = NULL, *f = NULL;
+	char *opt = "><|", ret, *t = NULL, *f = NULL;
 
-	ret = _find_oper(line, opt[0]), *(fd + STDIN_OUT) = STDOUT_FILENO;
+	/* Looking for operators */
+	*(fd + STDIN_OUT) = STDOUT_FILENO;
+	ret = _find_oper(line, opt[0]);					/* > */
 	if (ret == FALSE)
-		ret = _find_oper(line, opt[1]);
+		ret = _find_oper(line, opt[1]);				/* < */
+	if (ret == FALSE)
+		ret = _find_oper(line, opt[2]);				/* | */
 
 	if (ret == ERROR)
 	{	 _unexpected_redir(*execnt), *(fd + WRITE_END) = 2;
@@ -26,9 +31,11 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter)
 		return (line);
 	}
 
-	rdf = _def_flags(line, fd, ret, inter, &flags, &t, &f);
+	rdf = _def_flags(line, fd, cmds, ret, inter, &flags, &t, &f);
 	if (rdf == ERROR)
 		return (NULL);
+	if (rdf == PIPE)
+		return (line);
 
 	*(fd + WRITE_END) = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (ret == LT || ret == LT2)
@@ -47,30 +54,30 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter)
 /**
  * _find_oper - Tries to find the derired operator
  * @str: The string to check
- * @oper: The operator ['>' | '<' | ';' | '&' | '|']
+ * @op: The operator ['>' | '<' | ';' | '&' | '|']
  * Return: GT, GT2, LT, LT2, PIPE, SC, AND, OR, FALSE, ERROR
  */
-char _find_oper(char *str, char oper)
+char _find_oper(char *str, char op)
 {
 	char *p = str;
 
 	if (str == NULL)
 		return (FALSE);
 
-	while ((p = _strchr(p, oper)) != NULL)
+	while ((p = _strchr(p, op)) != NULL)
 	{
 		if (p != NULL)
 		{
-			if (*(p + 1) == oper)
+			if (*(p + 1) == op)
 			{
-				if (*(p + 2) == oper)
+				if (*(p + 2) == op)
 					return (ERROR);
 				else
-					return ((oper == '>') ? GT2 : LT2);
+					return ((op == '>') ? GT2 : ((op == '<') ? LT2 : OR));
 			}
 			else
 			{
-				return ((oper == '>') ? GT : LT);
+				return ((op == '>') ? GT : ((op == '<') ? LT : PIPE));
 			}
 		}
 		p++;

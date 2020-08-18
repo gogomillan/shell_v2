@@ -88,6 +88,10 @@ int savehist(lenv_s **lenv);
 int sizehist(lenv_s **lenv);
 int loadhist(lenv_s **lenv);
 
+/* Functions related to the interact function */
+int _bld_exec_stack(char *, char **, int *, char ***, char *);
+char **askmem(int argc, char *line);
+
 /* Function related with Built-ins */
 int (*check_builtin(char *line))();
 int _env(char **argv, lenv_s **lenv, unsigned int *execnt);
@@ -103,14 +107,14 @@ int _hlpexit(char **av, lenv_s **lenv, unsigned int *e);
 int _hlphistory(char **av, lenv_s **lenv, unsigned int *e);
 
 /* Functions related with redirection */
-char *_split_oper(char *line, int *fd, size_t *execnt, int inter);
-char _find_oper(char *str, char oper);
+char *_split_oper(char *, int *, char **, size_t *, int);
+char _find_oper(char *str, char op);
 char *_trim(char *str, char c);
 int _dup(int fd, char inout);
 void _unexpected_redir(size_t execnt);
 void _cannot_create(char *f, size_t execnt);
 int _rdheredoc(char *f, int inter);
-int _def_flags(char *, int *, char, int, int *, char **, char **);
+int _def_flags(char *, int *, char **, char, int, int *, char **, char **);
 
 /* strings functions */
 int _strlen(char *s);
