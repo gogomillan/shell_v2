@@ -1,7 +1,7 @@
 #include "hsh.h"
 
 /**
- * _unexpected_redir - Message for Syntax error: redirection unexpected\n"
+ * _unexpected_redir - Message for Syntax error: redirection unexpected
  * @execnt: Command line counter
  * Return: Nothing
  */
@@ -11,6 +11,27 @@ void _unexpected_redir(size_t execnt)
 
 	sprintf(msg, "%s: %ld: Syntax error: redirection unexpected\n",
 	"./hsh", execnt);
+	write(STDERR_FILENO, &msg, _strlen(msg));
+}
+
+/**
+ * _cannot_create - Message for Syntax error: cannot create
+ * @execnt: Command line counter
+ * Return: Nothing
+ */
+void _cannot_create(char *f, size_t execnt)
+{
+	char msg[161];
+	char *errmsg[2] = {"Permission denied", "Directory nonexistent"};
+	int err;
+
+	err = *(__errno_location());
+	if (err == 13)
+		err = 0;
+	else
+		err = 1;
+	sprintf(msg, "%s: %ld: cannot create %s: %s\n", "./hsh", execnt,
+	f, errmsg[err]);
 	write(STDERR_FILENO, &msg, _strlen(msg));
 }
 

@@ -10,9 +10,9 @@
  */
 char *_split_oper(char *line, int *fd, size_t *execnt, int inter)
 {
-	int err, flags, cf;
-	char *errmsg[2] = {"Permission denied", "Directory nonexistent"}, *opt = "><";
-	char msg[80], ret, *t = NULL, *f = NULL;
+	int flags, cf;
+	char *opt = "><";
+	char ret, *t = NULL, *f = NULL;
 
 	ret = _find_oper(line, opt[0]), *(fd + STDIN_OUT) = STDOUT_FILENO;
 	if (ret == FALSE)
@@ -35,10 +35,7 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter)
 	if (ret == LT || ret == LT2)
 		*(fd + STDIN_OUT) = STDIN_FILENO;
 	if (*(fd + WRITE_END) == -1)
-	{	err = (*(__errno_location()) == 13) ? 0 : 1, *(fd + WRITE_END) = 2;
-		sprintf(msg, "%s: %ld: cannot create %s: %s\n",
-		"./hsh", *execnt, f, errmsg[err]);
-		write(STDERR_FILENO, &msg, _strlen(msg));
+	{	_cannot_create(f, *execnt), *(fd + WRITE_END) = 2;
 		return (NULL);
 	}
 	if (cf)
