@@ -1,0 +1,4 @@
+ls > tmp1/NO_EXISTE
+mkdir tmp
+chmod 000 tmp
+ls > tmp/NO_EXISTE

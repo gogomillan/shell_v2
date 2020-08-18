@@ -33,7 +33,8 @@ int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int *fd)
 	if (sentence == NULL)
 	{	sprintf(msg, "%s: %ld: %s: not found\n", argv[0], *execnt, argv[1]);
 		write(STDERR_FILENO, &msg, _strlen(msg)), free(env);
-		return (127); /* return (0); */
+		return ((*(fd + WRITE_END) == CLOSED) ? 127 : 0);
+		/* return (127);  return (0); */
 	} pid = fork();
 	if (pid == -1)
 	{	perror("Error:");
