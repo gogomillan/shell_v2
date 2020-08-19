@@ -18,9 +18,9 @@ int main(int argc, char **argv, char **env)
 	signal(SIGINT, handsigint);
 	loadhist(&lenv);
 
-	if (argc > 1)
+	if (argc > 1)	/* If arguments then process them */
 		inputfile(argc, argv, &lenv, &execnt);
-	else
+	else			/* In interactive or redirected */
 		read = interact(argv, &lenv, &execnt);
 
 	path("FLUSH", &lenv);
