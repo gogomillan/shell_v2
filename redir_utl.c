@@ -55,28 +55,29 @@ char _find_oper(char *str, char oper)
 {
 	char *p = str;
 
+	/* Validate the no string option */
 	if (str == NULL)
 		return (FALSE);
-
+	/* Find out for the oper in the string */
 	while ((p = _strchr(p, oper)) != NULL)
 	{
-		if (p != NULL)
+		if (p != NULL)							/* Oper found */
 		{
-			if (*(p + 1) == oper)
+			if (*(p + 1) == oper)			/* Double oper found */
 			{
-				if (*(p + 2) == oper)
+				if (*(p + 2) == oper)	/* Triple oper found */
 					return (ERROR);
-				else
-					return ((oper == '>') ? GT2 : LT2);
+				else					/* If not return double oper */
+					return ((oper == '>') ? GT2 : ((oper == '<') ? LT2 : OR));
 			}
-			else
+			else							/* If not return sigle oper */
 			{
-				return ((oper == '>') ? GT : LT);
+				return ((oper == '>') ? GT : ((oper == '<') ? LT : PIPE));
 			}
 		}
-		p++;
+		p++;	/* Move the pointer if necessary */
 	}
-
+	/* Oper not found */
 	return (FALSE);
 }
 
@@ -90,18 +91,18 @@ char *_trim(char *str, char c)
 {
 	char *h = str, *t = str; /* Head and Tail of the string */
 
-	if (str == NULL)
+	if (str == NULL)		/* No string */
 		return (str);
-	if (_strlen(str) <= 0)
+	if (_strlen(str) <= 0)	/* Empty string */
 		return (str);
 
-	while (*t++ != '\0')
+	while (*t++ != '\0')	/* Trim the char at the beginning */
 		if (*h == c)
 			h++;
 	t--, t--;
-	while (*t == c)
+	while (*t == c)			/* Trim the char at the end */
 		*t-- = '\0';
-
+	/* Return a pointer to the beginning */
 	return (h);
 }
 
@@ -153,13 +154,13 @@ int _rdheredoc(char *f, int inter)
 	}
 	/* Take the keyboard input */
 	do {
-		if (inter)
+		if (inter)			/* When interactive prompt */
 			write(STDOUT_FILENO, "> ", 2);
 		ret = getline(&buf, &len, stdin);
-		save = buf[_strlen(buf) - 1];
+		save = buf[_strlen(buf) - 1];	/* Deal with the \n */
 		buf[_strlen(buf) - 1] = '\0';
 		if (ret > 0 && _strcmp(buf, f) != 0)
-		{
+		{	/* Write in the tmp file if isn't the TOKEN */
 			buf[_strlen(buf)] = save;
 			if (write(fd, buf, _strlen(buf)) <= 0)
 			{   perror("write");
@@ -168,7 +169,7 @@ int _rdheredoc(char *f, int inter)
 			buf[_strlen(buf) - 1] = '\0';
 		}
 	} while (ret > 0 && _strcmp(buf, f) != 0);
-	fflush(stdin), fflush(stdout), free(buf);
-	close(fd);
+	fflush(stdin), fflush(stdout), free(buf), close(fd);	/* Cleaning */
+	/* Return the file descriptor to say we had input */
 	return (fd);
 }
