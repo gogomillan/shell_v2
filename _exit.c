@@ -14,7 +14,7 @@ int _ex(char **argv, lenv_s **lenv, unsigned int *e)
 
 	(void) lenv;
 	if (argv[pos] == NULL)
-		return (0);
+		return (-1);
 	if (_isdigit(argv[2]) == 1)
 		ret = _atoi(argv[pos]);
 	else
