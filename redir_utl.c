@@ -158,7 +158,7 @@ int _rdheredoc(char *f, int inter)
 		ret = getline(&buf, &len, stdin);
 		save = buf[_strlen(buf) - 1];
 		buf[_strlen(buf) - 1] = '\0';
-		if (ret > 0 && _strncmp(buf, f, _strlen(f)) != 0)
+		if (ret > 0 && _strcmp(buf, f) != 0)
 		{
 			buf[_strlen(buf)] = save;
 			if (write(fd, buf, _strlen(buf)) <= 0)
@@ -167,7 +167,7 @@ int _rdheredoc(char *f, int inter)
 			}
 			buf[_strlen(buf) - 1] = '\0';
 		}
-	} while (ret > 0 && _strncmp(buf, f, _strlen(f)) != 0);
+	} while (ret > 0 && _strcmp(buf, f) != 0);
 	fflush(stdin), fflush(stdout), free(buf);
 	close(fd);
 	return (fd);
