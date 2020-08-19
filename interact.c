@@ -18,12 +18,11 @@ int interact(char **av, lenv_s **lenv, size_t *execnt)
 	char **argv = NULL, *line = NULL, *tmp = NULL, *myline = NULL;
 
 	isatty(STDIN_FILENO) == 0 ? inter = 0 : inter;
-	do {	inter == 1 ?  write(STDOUT_FILENO, "($) ", 4) : inter;
-		fflush(stdin);
+	do {
+		inter == 1 ?  write(STDOUT_FILENO, "($) ", 4) : inter, fflush(stdin);
 		read = getline(&line, &len, stdin);
 		if (read == -1)
-		{	read == -1 && inter == 1 ? write(1, "\n", 1) : read;
-			free(line);
+		{	read == -1 && inter == 1 ? write(1, "\n", 1) : read, free(line);
 			return (ret);
 		}
 		if (_split_oper(line, fd, execnt, inter) == NULL) /* Redirections > >>< << */
@@ -36,15 +35,12 @@ int interact(char **av, lenv_s **lenv, size_t *execnt)
 		f = check_builtin(myline);
 		if (f != NULL)
 		{	builtin = f(argv, lenv, execnt);
-			if (_strncmp(myline, "exit", 4) == 0 && builtin >= 0)
-			{	free(tmp), free(myline), free(line);
-				if (argv[2] != NULL)
-				{	free(argv);
-					return (builtin);
-				} free(argv);
-				return (ret);
+			if (_strncmp(myline, "exit", 4) == 0)
+			{	free(tmp), free(myline), free(line), free(argv);
+				return ((builtin == -1) ? ret : builtin);
 			} ret = builtin;
-		} else
+		}
+		else
 			argc > 2 ? ret = myexec(j, argv, lenv, execnt, fd) : argc;
 		addhist(argv), free(argv), free(tmp), free(myline), (*execnt)++;
 		argv = NULL, tmp = NULL, myline = NULL;
