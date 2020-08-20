@@ -6,17 +6,20 @@
  * @fd: The file descriptor
  * @execnt: the command line counter
  * @inter: Interactive mode [0 | 1]
+ * @cmd2: Second command
  * Return: The line without the redirection
  */
-char *_split_oper(char *line, int *fd, size_t *execnt, int inter)
+char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char *cmd2)
 {
 	int flags, cf;
 	char *opt = "><|";
 	char ret, *t = NULL, *f = NULL;
 
-	ret = _find_oper(line, opt[0]), *(fd + STDIN_OUT) = STDOUT_FILENO;
+	ret = _find_oper(line, opt[0]), *(fd + STDIN_OUT) = STDOUT_FILENO, (void)cmd2;
 	if (ret == FALSE)
 		ret = _find_oper(line, opt[1]);
+	if (ret == FALSE)
+		ret = _find_oper(line, opt[2]);
 
 	if (ret == ERROR)
 	{	 _unexpected_redir(*execnt), *(fd + WRITE_END) = 2;
@@ -27,7 +30,7 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter)
 		return (line);
 	}
 
-	cf = _def_flags(line, fd, ret, inter, &flags, &t, &f);
+	cf = _def_flags(line, fd, ret, inter, &flags, &t, &f), cmd2 = f;
 	if (cf == ERROR)
 		return (NULL);
 
