@@ -29,7 +29,9 @@
 #define SC    7
 #define AND   8
 #define OR    9
+#define COMM 10
 /* Redirections */
+#define O_COMM    -3
 #define NO_OTHER  -2
 #define CLOSED    -1
 #define READ_END   0

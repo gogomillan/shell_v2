@@ -47,7 +47,7 @@ void _cannot_create(char ret, char *f, size_t execnt)
  * _def_flags - Define flags for redirection
  * @line: The command line
  * @fd: The file descriptors array for redirection
- * @re: What symbol "> >> < <<"
+ * @re: What symbol "> >> < << | || && ; #"
  * @in: Interactive [0 | 1]
  * @flag: Flags
  * @t: Token to command
@@ -58,13 +58,14 @@ int _def_flags(char *line, int *fd, char re, int in,
 		int *flag, char **t, char **f)
 {
 	int ret = FALSE;
-	char *opt = "><|&;", *tmp = NULL;
+	char *opt = "><|&;#", *tmp = NULL;
 
 	tmp = _strdup(line), *t = strtok(tmp, opt), *f = strtok(NULL, opt);
 	if (*t != NULL && *f != NULL)	/* Special contitions > file or < file */
 		*t = strtok(line, opt), *f = strtok(NULL, opt);
 	else
 		*f = strtok(line, opt), *t = line, ret = TRUE;
+
 	free(tmp);
 	*f = _trim(*f, ' '), *f = _trim(*f, '\t');
 	*f = _trim(*f, '\n'), *f = _trim(*f, '\r');
@@ -80,6 +81,8 @@ int _def_flags(char *line, int *fd, char re, int in,
 	}
 	else if (re == GT2)		/* Open the file for append ">>" */
 		*flag = O_CREAT | O_WRONLY | O_APPEND;
+	else if (re == COMM)	/* For # */
+		*flag = O_COMM;
 	else					/* For pipe "|" or "||" or "&&" */
 		*flag = NO_OTHER;
 
