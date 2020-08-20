@@ -55,6 +55,7 @@ int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int *fd)
 /**
  * _test_cmd - Verify the command
  * @sentence: The command sentence
+ * @argv: The cmmand arguments
  * @env: The environment
  * @execnt: The execution command line counter
  * @fd: The file descriptors
