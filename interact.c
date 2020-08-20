@@ -15,7 +15,7 @@ int interact(char **av, lenv_s **lenv, size_t *execnt)
 	size_t len = 0;
 	int read = 1, j, argc = 0, inter = 1, (*f)() = NULL, builtin;
 	int ret = 0, fd[4] = {CLOSED, CLOSED, STDOUT_FILENO, CLOSED};
-	char **argv = NULL, *line = NULL, *tmp = NULL, *myline = NULL;
+	char **argv = NULL, *line = NULL, *tmp = NULL, *myline = NULL, *cmd2 = NULL;
 
 	isatty(STDIN_FILENO) == 0 ? inter = 0 : inter;	/*If tty -> intereact -> ($) */
 	do {
@@ -25,7 +25,7 @@ int interact(char **av, lenv_s **lenv, size_t *execnt)
 		{	read == -1 && inter == 1 ? write(1, "\n", 1) : read, free(line);
 			return (ret);									/* If EOF exit */
 		}
-		if (_split_oper(line, fd, execnt, inter) == NULL)	/* Operand > >>< << | || */
+		if (_split_oper(line, fd, execnt, inter, cmd2) == NULL)	/*Op: > >>< << | ||*/
 		{	ret = fd[WRITE_END], addhist(argv), (*execnt)++, fd[WRITE_END] = CLOSED;
 			continue;
 		}

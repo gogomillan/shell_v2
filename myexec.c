@@ -27,16 +27,16 @@ int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int *fd)
 		return (ret);
 	/* Create a child process */
 	pid = fork();
-	if (pid == -1)									/* If any error from fork */
+	if (pid == -1)					/* If any error from fork */
 	{	perror("Error:");
 		return (1);
 	}
-	else if (pid == 0)								/* Execute the command in the child */
+	else if (pid == 0)				/* Execute the command in the child */
 	{	ret = (fd[WRITE_END] != CLOSED) ? _dup(fd[WRITE_END], fd[STDIN_OUT]) : ret;
 		if (execve(sentence, (argv + 1), env) == -1)
 			exit(127);
 	}
-	else											/* The parent wait for the child */
+	else							/* The parent wait for the child */
 	{	wait(&status);
 		if (WIFEXITED(status))
 			es = WEXITSTATUS(status);
