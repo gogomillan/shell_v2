@@ -58,7 +58,7 @@ int _def_flags(char *line, int *fd, char re, int in,
 		int *flag, char **t, char **f)
 {
 	int ret = FALSE;
-	char *opt = "><|", *tmp = NULL;
+	char *opt = "><|&", *tmp = NULL;
 
 	tmp = _strdup(line), *t = strtok(tmp, opt), *f = strtok(NULL, opt);
 	if (*t != NULL && *f != NULL)	/* Special contitions > file or < file */
@@ -80,7 +80,7 @@ int _def_flags(char *line, int *fd, char re, int in,
 	}
 	else if (re == GT2)		/* Open the file for append ">>" */
 		*flag = O_CREAT | O_WRONLY | O_APPEND;
-	else					/* For pipe "|" or "||" */
+	else					/* For pipe "|" or "||" or "&&" */
 		*flag = NO_OTHER;
 
 	return (ret);

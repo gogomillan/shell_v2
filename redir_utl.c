@@ -12,7 +12,7 @@
 char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char *cmd2)
 {
 	int flags, cf;
-	char *opt = "><|";
+	char *opt = "><|&";
 	char ret, *t = NULL, *f = NULL;
 
 	ret = _find_oper(line, opt[0]), *(fd + STDIN_OUT) = STDOUT_FILENO, (void)cmd2;
@@ -20,6 +20,8 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char *cmd2)
 		ret = _find_oper(line, opt[1]);
 	if (ret == FALSE)
 		ret = _find_oper(line, opt[2]);
+	if (ret == FALSE)
+		ret = _find_oper(line, opt[3]);
 
 	if (ret == ERROR)
 	{	 _unexpected_redir(*execnt), *(fd + WRITE_END) = 2;
@@ -34,7 +36,7 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char *cmd2)
 	if (cf == ERROR)
 		return (NULL);
 
-	if (ret == PIPE || ret == OR)
+	if (ret == PIPE || ret == OR || ret == AND)
 		*(fd + WRITE_END) = STDOUT_FILENO;
 	else
 		*(fd + WRITE_END) = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
@@ -74,11 +76,13 @@ char _find_oper(char *str, char oper)
 				if (*(p + 2) == oper)	/* Triple oper found */
 					return (ERROR);
 				else					/* If not return double oper */
-					return ((oper == '>') ? GT2 : ((oper == '<') ? LT2 : OR));
+					return ((oper == '>') ? GT2 : ((oper == '<') ? LT2 :
+							((oper == '|') ? OR : ((oper == '&') ? AND : FALSE))));
 			}
 			else							/* If not return sigle oper */
 			{
-				return ((oper == '>') ? GT : ((oper == '<') ? LT : PIPE));
+				return ((oper == '>') ? GT : ((oper == '<') ? LT :
+						((oper == '|') ? PIPE : ((oper == ';') ? SC : FALSE))));
 			}
 		}
 		p++;	/* Move the pointer if necessary */
