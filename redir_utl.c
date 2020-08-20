@@ -12,11 +12,11 @@
 char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char *cmd2)
 {
 	int flags, cf, op = 0;
-	char *opt = "><|&;";
+	char *opt = "><|&;#";
 	char ret = FALSE, *t = NULL, *f = NULL;
 
 	*(fd + STDIN_OUT) = STDOUT_FILENO, (void)cmd2;
-	for (op = 0; op < 5 && ret == FALSE; op++)
+	for (op = 0; op < _strlen(opt) && ret == FALSE; op++)
 		ret = _find_oper(line, opt[op]);
 
 	if (ret == ERROR)
@@ -32,7 +32,7 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char *cmd2)
 	if (cf == ERROR)
 		return (NULL);
 
-	if (ret == PIPE || ret == OR || ret == AND || ret == SC)
+	if (ret == PIPE || ret == OR || ret == AND || ret == SC || ret == COMM)
 		*(fd + WRITE_END) = STDOUT_FILENO;
 	else
 		*(fd + WRITE_END) = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
@@ -42,8 +42,9 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char *cmd2)
 	{	_cannot_create(ret, f, *execnt), *(fd + WRITE_END) = 2;
 		return (NULL);
 	}
-	if (cf)
-	{	close(*(fd + WRITE_END)), *(fd + WRITE_END) = 0;
+	if (cf == TRUE)
+	{	(flags == NO_OTHER) ? close(*(fd + WRITE_END)) : flags;
+		*(fd + WRITE_END) = 0;
 		return (NULL);
 	}
 	return (line);
@@ -52,8 +53,8 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char *cmd2)
 /**
  * _find_oper - Tries to find the derired operator
  * @str: The string to check
- * @oper: The operator ['>' | '<' | ';' | '&' | '|']
- * Return: GT, GT2, LT, LT2, PIPE, SC, AND, OR, FALSE, ERROR
+ * @oper: The operator ['>' | '<' | ';' | '&' | '|' | '#' ]
+ * Return: GT, GT2, LT, LT2, PIPE, SC, AND, OR, COMM, FALSE, ERROR
  */
 char _find_oper(char *str, char oper)
 {
@@ -73,12 +74,14 @@ char _find_oper(char *str, char oper)
 					return (ERROR);
 				else					/* If not return double oper */
 					return ((oper == '>') ? GT2 : ((oper == '<') ? LT2 :
-							((oper == '|') ? OR : ((oper == '&') ? AND : FALSE))));
+							((oper == '|') ? OR : ((oper == '&') ? AND :
+							((oper == '#') ? COMM : FALSE)))));
 			}
 			else							/* If not return sigle oper */
 			{
 				return ((oper == '>') ? GT : ((oper == '<') ? LT :
-						((oper == '|') ? PIPE : ((oper == ';') ? SC : FALSE))));
+						((oper == '|') ? PIPE : ((oper == ';') ? SC :
+						((oper == '#') ? COMM : FALSE)))));
 			}
 		}
 		p++;	/* Move the pointer if necessary */
