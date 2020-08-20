@@ -1,6 +1,7 @@
 #include "hsh.h"
 
 int _test_cmd(char *sentence, char **av, char **env, size_t *execnt, int *fd);
+char *_path_cmd(char **argv, lenv_s **lenv, char *pathos);
 
 /**
  * myexec - Exececutes a command
@@ -15,24 +16,18 @@ int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int *fd)
 {
 	pid_t pid;
 	int status, ret = 0, es = 0; /* ret = return, es = exit status */
-	char *sentence = NULL, *pathos, *tmp = NULL, **env = menv(lenv);
+	char *sentence = NULL, *pathos, **env = menv(lenv);
 
+	/* Make sentence with path */
 	(void) argc, pathos = _getenv("PATH", lenv);
-	if (_strncmp(pathos, ":", 1) == 0 || pathos == NULL) /* if bad PATH */
-	{
-		tmp = _strdup(argv[1]), sentence = tmp;
-		if (access(sentence, F_OK | R_OK | X_OK) == -1)
-			free(tmp), sentence = NULL;
-	}
-	else											/* Correct PATH */
-		sentence = path(argv[1], lenv);
-
-	ret = _test_cmd(sentence, argv, env, execnt, fd);/*Is this sentence correct?*/
+	sentence = _path_cmd(argv, lenv, pathos);
+	/*Is this sentence correct?*/
+	ret = _test_cmd(sentence, argv, env, execnt, fd);
 	if (ret != NO_OTHER)
 		return (ret);
-
-	pid = fork();									/* Create a child process */
-	if (pid == -1)
+	/* Create a child process */
+	pid = fork();
+	if (pid == -1)									/* If any error from fork */
 	{	perror("Error:");
 		return (1);
 	}
@@ -50,6 +45,29 @@ int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int *fd)
 	(fd[LT2_OUT] != CLOSED) ? unlink(TMP_FILE) : es;
 	fd[LT2_OUT] = CLOSED;
 	return (es);
+}
+
+/**
+ * _path_cmd - Find a path for the command
+ * @argv: The double pounter to the arguments to the execv
+ * @lenv: The pointer to the environment structure
+ * @pathos: The path from OS
+ * Return: The pointer to the sentence
+ */
+char *_path_cmd(char **argv, lenv_s **lenv, char *pathos)
+{
+	char *sentence = NULL, *tmp = NULL;
+
+	if (_strncmp(pathos, ":", 1) == 0 || pathos == NULL) /* if bad PATH */
+	{
+		tmp = _strdup(argv[1]), sentence = tmp;
+		if (access(sentence, F_OK | R_OK | X_OK) == ERROR)
+			free(tmp), sentence = NULL;
+	}
+	else											/* Correct PATH */
+		sentence = path(argv[1], lenv);
+
+	return (sentence);
 }
 
 /**
