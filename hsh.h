@@ -30,6 +30,7 @@
 #define AND   8
 #define OR    9
 /* Redirections */
+#define NO_OTHER  -2
 #define CLOSED    -1
 #define READ_END   0
 #define WRITE_END  1

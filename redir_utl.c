@@ -11,7 +11,7 @@
 char *_split_oper(char *line, int *fd, size_t *execnt, int inter)
 {
 	int flags, cf;
-	char *opt = "><";
+	char *opt = "><|";
 	char ret, *t = NULL, *f = NULL;
 
 	ret = _find_oper(line, opt[0]), *(fd + STDIN_OUT) = STDOUT_FILENO;
@@ -31,7 +31,10 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter)
 	if (cf == ERROR)
 		return (NULL);
 
-	*(fd + WRITE_END) = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	if (ret == PIPE || ret == OR)
+		*(fd + WRITE_END) = STDOUT_FILENO;
+	else
+		*(fd + WRITE_END) = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (ret == LT || ret == LT2)
 		*(fd + STDIN_OUT) = STDIN_FILENO;
 	if (*(fd + WRITE_END) == -1)
