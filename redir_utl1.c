@@ -88,3 +88,22 @@ int _def_flags(char *line, int *fd, char re, int in,
 
 	return (ret);
 }
+
+/**
+ * _cmm_case - Special case for comments
+ * @line: The command line
+ * Return: [ COMM | FALSE ]
+ */
+int _cmm_case(char *line)
+{
+	char *p;
+
+	if (line == NULL)
+		return (FALSE);
+
+	p = _strchr(line, '#');
+	if (p == line || *(p - 1) == ' ')
+		return (COMM);
+
+	return (FALSE);
+}

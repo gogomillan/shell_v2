@@ -1,0 +1,41 @@
+echo --
+echo "# This is a comment"
+echo "# This is a comment" | sh
+echo "# This is a comment" | ./hsh
+echo $?
+echo --
+echo "/bin/echo #This is a comment"
+echo "/bin/echo #This is a comment" | sh
+echo "/bin/echo #This is a comment" | ./hsh
+echo $?
+echo --
+echo "/bin/echo HBTN #This is a comment"
+echo "/bin/echo HBTN #This is a comment" | sh
+echo "/bin/echo HBTN #This is a comment" | ./hsh
+echo $?
+echo --
+echo "/bin/echo HBTN# This is a comment"
+echo "/bin/echo HBTN# This is a comment" | sh
+echo "/bin/echo HBTN# This is a comment" | ./hsh
+echo $?
+echo --
+echo "/bin/echo HBTN#This is a comment"
+echo "/bin/echo HBTN#This is a comment" | sh
+echo "/bin/echo HBTN#This is a comment" | ./hsh
+echo $?
+echo --
+echo "/bin/echo HBTN##This is a comment"
+echo "/bin/echo HBTN##This is a comment" | sh
+echo "/bin/echo HBTN##This is a comment" | ./hsh
+echo $?
+echo --
+echo "/bin/echo HBTN###This is a comment"
+echo "/bin/echo HBTN###This is a comment" | sh
+echo "/bin/echo HBTN###This is a comment" | ./hsh
+echo $?
+echo --
+echo "/bin/echo HBTN # This is a comment"
+echo "/bin/echo HBTN # This is a comment" | sh
+echo "/bin/echo HBTN # This is a comment" | ./hsh
+echo $?
+echo --
