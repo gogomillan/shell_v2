@@ -15,10 +15,11 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char *cmd2)
 	char *opt = "><|&;#";
 	char ret = FALSE, *t = NULL, *f = NULL;
 
+	/* Looking for an operator */
 	*(fd + STDIN_OUT) = STDOUT_FILENO, (void)cmd2;
 	for (op = 0; op < _strlen(opt) && ret == FALSE; op++)
 		ret = _find_oper(line, opt[op]);
-
+	/* Verify error or false result */
 	if (ret == ERROR)
 	{	 _unexpected_redir(*execnt), *(fd + WRITE_END) = 2;
 		return (NULL);
@@ -27,22 +28,22 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char *cmd2)
 	{	*(fd + WRITE_END) = CLOSED;
 		return (line);
 	}
-
+	/* Get flags for redirections and see for command conectors */
 	cf = _def_flags(line, fd, ret, inter, &flags, &t, &f), cmd2 = f;
 	if (cf == ERROR)
 		return (NULL);
-
+	/* If necessary open files for redirection */
 	if (ret == PIPE || ret == OR || ret == AND || ret == SC || ret == COMM)
 		*(fd + WRITE_END) = STDOUT_FILENO;
 	else
 		*(fd + WRITE_END) = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-	if (ret == LT || ret == LT2)
+	if (ret == LT || ret == LT2)	/* Control for < */
 		*(fd + STDIN_OUT) = STDIN_FILENO;
-	if (*(fd + WRITE_END) == -1)
+	if (*(fd + WRITE_END) == ERROR)	/* If fail openning */
 	{	_cannot_create(ret, f, *execnt), *(fd + WRITE_END) = 2;
 		return (NULL);
 	}
-	if (cf == TRUE)
+	if (cf == TRUE)					/* Close file when cmd line starts with < or > */
 	{	(flags == NO_OTHER) ? close(*(fd + WRITE_END)) : flags;
 		*(fd + WRITE_END) = 0;
 		return (NULL);

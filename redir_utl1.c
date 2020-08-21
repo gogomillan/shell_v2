@@ -31,13 +31,13 @@ void _cannot_create(char ret, char *f, size_t execnt)
 
 	err = *(__errno_location());
 	if (err == 13)
-		err = 0;
+		err = 0;	/* Permission denied */
 	else
-		err = 1;
+		err = 1;	/* Directory nonexistent */
 	if (ret == LT)
-		err = 2, ret = 1;
+		err = 2, ret = 1;	/* Error msg for < */
 	else
-		ret = 0;
+		ret = 0;			/* Error msg for > or >> */
 	sprintf(msg, "%s: %ld: %s %s: %s\n", "./hsh", execnt, o_c_msg[(int)ret],
 	f, errmsg[err]);
 	write(STDERR_FILENO, &msg, _strlen(msg));
@@ -61,15 +61,16 @@ int _def_flags(char *line, int *fd, char re, int in,
 	char *opt = "><|&;#", *tmp = NULL;
 
 	tmp = _strdup(line), *t = strtok(tmp, opt), *f = strtok(NULL, opt);
-	if (*t != NULL && *f != NULL)	/* Special contitions > file or < file */
-		*t = strtok(line, opt), *f = strtok(NULL, opt);
+	/* Special contitions > file or < file */
+	if (*t != NULL && *f != NULL)
+		*t = strtok(line, opt), *f = strtok(NULL, opt);	/* cmd oper cmd */
 	else
-		*f = strtok(line, opt), *t = line, ret = TRUE;
-
+		*f = strtok(line, opt), *t = line, ret = TRUE;	/* redirect file_name */
+	/* Trimp chars from beginning and end for file name or next command */
 	free(tmp);
 	*f = _trim(*f, ' '), *f = _trim(*f, '\t');
 	*f = _trim(*f, '\n'), *f = _trim(*f, '\r');
-
+	/* Evaluate the flags needed */
 	if (re == GT)			/* Open the file for create ">" */
 		*flag = O_CREAT | O_WRONLY | O_TRUNC;
 	else if (re == LT)		/* Open the file for read "<" */
@@ -85,7 +86,7 @@ int _def_flags(char *line, int *fd, char re, int in,
 		*flag = O_COMM;
 	else					/* For pipe "|" or "||" or "&&" */
 		*flag = NO_OTHER;
-
+	/* This reurns let's know if the redirection file is a tmp */
 	return (ret);
 }
 
@@ -100,10 +101,10 @@ int _cmm_case(char *line)
 
 	if (line == NULL)
 		return (FALSE);
-
+	/* if find the # and in at the beginning or after a blank, then OK */
 	p = _strchr(line, '#');
-	if (p == line || *(p - 1) == ' ')
+	if (p == line || *(p - 1) == ' ' || *(p - 1) == '\t')
 		return (COMM);
-
+	/* Else isn't cosidered a comment */
 	return (FALSE);
 }
