@@ -68,6 +68,8 @@ char _find_oper(char *str, char oper)
 	{
 		if (p != NULL)							/* Oper found */
 		{
+			if (oper == '#')	/* Find out comment special case*/
+				return (_cmm_case(str));
 			if (*(p + 1) == oper)			/* Double oper found */
 			{
 				if (*(p + 2) == oper)	/* Triple oper found */
@@ -91,7 +93,7 @@ char _find_oper(char *str, char oper)
 }
 
 /**
- * _trim - Trim characteres at the begging and end of a string
+ * _trim - Trim characteres at the beginning and end of a string
  * @str: String
  * @c: Character to trim
  * Return: A pointer to the new position to start the string
