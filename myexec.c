@@ -15,7 +15,7 @@ int _cmdln(char *line, char **ml, char **tm, char ***ar, int *ac, char **av);
  */
 int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 {
-	pid_t pid1;
+	pid_t pid1, pid2;
 	int argc, j, status, ret = 0, es = 0; /* ret = return, es = exit status */
 	char *sentence = NULL, *pathos, **env = menv(lenv);
 	char *sntc = NULL, *myline, *tmp, **av2;
@@ -57,17 +57,41 @@ int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 			if (execve(sentence, (argv + 1), env) == -1)
 				exit(127);
 		}
-	}
-	else							/* The parent wait for the child */
-	{	wait(&status);
-		if (WIFEXITED(status))
-			es = WEXITSTATUS(status);
+	} else							/* The parent wait for the child */
+	{
+		if (fd[READ_END] != CLOSED && cmd2 != NULL)	/* There is a second sentence */
+		{	pid2 = fork();					/* Create a child process */
+			if (pid2 == -1)					/* If any error from fork */
+			{	perror("Error:");
+				return (1);
+			}
+			else if (pid1 == 0)				/* Execute the command in the child */
+			{	_dup(fd[WRITE_END], STDOUT_FILENO);
+				if (execve(sentence, (argv + 1), env) == -1)
+					exit(127);
+			} else
+			{	/* Wait for the writter child */
+				wait(&status);
+				if (WIFEXITED(status))
+					es = WEXITSTATUS(status);
+				/* Close both sides of pipe to release the consumer process */
+				close(fd[READ_END]), close(fd[WRITE_END]);
+				/* Wait for the reader child */
+				wait(&status);
+				if (WIFEXITED(status))
+					es = WEXITSTATUS(status);
+			}
+		} else
+		{	wait(&status);
+			if (WIFEXITED(status))
+				es = WEXITSTATUS(status);
+		}
 	}
 	free(sentence), free(env);
 	if (fd[READ_END] != CLOSED && cmd2 != NULL)
 		free(av2), free(tmp), free(myline);
 	(fd[LT2_OUT] != CLOSED) ? unlink(TMP_FILE) : j;
-	fd[LT2_OUT] = CLOSED;
+	fd[LT2_OUT] = fd[READ_END] = fd[WRITE_END] = CLOSED;
 	return (es);
 }
 
