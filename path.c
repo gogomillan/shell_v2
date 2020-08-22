@@ -1,5 +1,7 @@
 #include "hsh.h"
 
+char *_path_cmd(char **argv, lenv_s **lenv, char *pathos);
+
 /**
  * path - Evaluate the name for execution taking into account PATH if necessary
  * @name: Name of the command to execute
@@ -12,6 +14,8 @@ unsigned int i;
 int j, k;
 char *str1, *token, *tmp = NULL, **env = menv(lenv);
 static char **paths, *pa;
+	if (name == NULL)
+		return (NULL);
 	if (_strncmp(name, "FLUSH", 5) == 0)
 	{	free(pa), free(paths), free(env);
 		return (NULL);
