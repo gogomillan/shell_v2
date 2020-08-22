@@ -57,7 +57,7 @@ void _cannot_create(char ret, char *f, size_t execnt)
 int _def_flags(char *line, int *fd, char re, int in,
 		int *flag, char **t, char **f)
 {
-	int ret = FALSE;
+	int pipefd[2], ret = FALSE;
 	char *opt = "><|&;#", *tmp = NULL;
 
 	tmp = _strdup(line), *t = strtok(tmp, opt), *f = strtok(NULL, opt);
@@ -84,7 +84,15 @@ int _def_flags(char *line, int *fd, char re, int in,
 		*flag = O_CREAT | O_WRONLY | O_APPEND;
 	else if (re == COMM)	/* For # */
 		*flag = O_COMM;
-	else					/* For pipe "|" or "||" or "&&" */
+	else if (re == PIPE)	/* For pipe "|" */
+	{
+		if (pipe(pipefd) == -1)
+		{   perror("pipe");
+			return (ERROR);
+		}
+		*(fd + READ_END) = pipefd[READ_END], *(fd + WRITE_END) = pipefd[WRITE_END];
+	}
+	else					/* For "||" or "&&" */
 		*flag = NO_OTHER;
 	/* This reurns let's know if the redirection file is a tmp */
 	return (ret);
