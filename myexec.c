@@ -16,7 +16,7 @@ int _cmdln(char *line, char **ml, char **tm, char ***ar, int *ac, char **av);
 int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 {
 	pid_t pid1, pid2;
-	int argc, j, status, ret = 0, es = 0; /* ret = return, es = exit status */
+	int argc, j, status = 0, ret = 0, es = 0; /* ret = return, es = exit status */
 	char *sentence = NULL, *pathos, **env = menv(lenv);
 	char *sntc = NULL, *myline, *tmp, **av2;
 
@@ -30,15 +30,11 @@ int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 	if (fd[READ_END] != CLOSED && cmd2 != NULL)
 	{
 		j = _cmdln(cmd2, &myline, &tmp, &av2, &argc, argv);	/* Make stack for execv*/
-		for (argc = 0; av2[argc] != NULL; argc++)
-			printf("{%s}", av2[argc]);
-		printf("\n");
 		sntc = _path_cmd(av2, lenv, pathos);				/* Full sentence */
 		ret = _test_cmd(sntc, av2, env, execnt, fd);		/* Is correct? */
 		if (ret != NO_OTHER)
 			return (ret);
 	}
-	/* gogomillan - printf("To fork -> [%s][%s]\n", sentence, cmd2); */
 	/* Create a child process */
 	pid1 = fork();
 	if (pid1 == -1)					/* If any error from fork */
@@ -48,7 +44,8 @@ int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 	else if (pid1 == 0)				/* Execute the command in the child */
 	{
 		if (fd[READ_END] != CLOSED && cmd2 != NULL)	/* There is a second sentence */
-		{	_dup(fd[READ_END], STDIN_FILENO);
+		{	close(fd[WRITE_END]);
+			_dup(fd[READ_END], STDIN_FILENO);
 			if (execve(sntc, (av2 + 1), env) == -1)
 				exit(127);
 		}
@@ -65,8 +62,9 @@ int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 			{	perror("Error:");
 				return (1);
 			}
-			else if (pid1 == 0)				/* Execute the command in the child */
-			{	_dup(fd[WRITE_END], STDOUT_FILENO);
+			else if (pid2 == 0)				/* Execute the command in the child */
+			{	close(fd[READ_END]);
+				_dup(fd[WRITE_END], STDOUT_FILENO);
 				if (execve(sentence, (argv + 1), env) == -1)
 					exit(127);
 			} else
@@ -89,7 +87,7 @@ int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 	}
 	free(sentence), free(env);
 	if (fd[READ_END] != CLOSED && cmd2 != NULL)
-		free(av2), free(tmp), free(myline);
+		free(av2), free(tmp), free(myline), free(sntc);
 	(fd[LT2_OUT] != CLOSED) ? unlink(TMP_FILE) : j;
 	fd[LT2_OUT] = fd[READ_END] = fd[WRITE_END] = CLOSED;
 	return (es);

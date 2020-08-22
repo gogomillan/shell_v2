@@ -34,7 +34,7 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char **cmd2)
 		return (NULL);
 	/* If necessary open files for redirection */
 	if (ret == PIPE || ret == OR || ret == AND || ret == SC || ret == COMM)
-		*(fd + WRITE_END) = STDOUT_FILENO;
+		*(fd + WRITE_END) = (ret != PIPE) ? STDOUT_FILENO : *(fd + WRITE_END);
 	else
 		*(fd + WRITE_END) = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (ret == LT || ret == LT2)	/* Control for < */
@@ -134,7 +134,7 @@ int _dup(int fd, char inout)
 		}
 	}
 	else if (inout == STDIN_FILENO)
-	{	/* Duplicate the file on the STDOUT stream */
+	{	/* Duplicate the file on the STDIN stream */
 		if (dup2(fd, STDIN_FILENO) == -1)
 		{   perror("dup2");
 			return (-1);
