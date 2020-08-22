@@ -1,1 +1,7 @@
-cat < NO_EXISTE
+echo "ls > lista" | sh
+echo "ls > lista" | ./hsh
+echo "ls" | sh
+echo "ls" | ./hsh
+echo "cat lista" | sh
+echo "cat lista" | ./sh
+echo "rm lista" | sh

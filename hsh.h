@@ -82,7 +82,7 @@ typedef struct builtin
 
 int inputfile(int argc, char **argv, lenv_s **lenv, size_t *execnt);
 int interact(char **av, lenv_s **lenv, size_t *execnt);
-int myexec(int argc, char **argv, lenv_s **lenv, size_t *execnt, int *fd);
+int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2);
 void handsigint(int sign);
 char *path(char *name, lenv_s **env);
 int currhist(commhist_s **h, commhist_s **t);
@@ -106,7 +106,7 @@ int _hlpexit(char **av, lenv_s **lenv, unsigned int *e);
 int _hlphistory(char **av, lenv_s **lenv, unsigned int *e);
 
 /* Functions related with redirection */
-char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char *cmd2);
+char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char **cmd2);
 char _find_oper(char *str, char oper);
 char *_trim(char *str, char c);
 int _dup(int fd, char inout);

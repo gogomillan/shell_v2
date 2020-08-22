@@ -9,7 +9,7 @@
  * @cmd2: Second command
  * Return: The line without the redirection
  */
-char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char *cmd2)
+char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char **cmd2)
 {
 	int flags, cf, op = 0;
 	char *opt = "><|&;#";
@@ -29,7 +29,7 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char *cmd2)
 		return (line);
 	}
 	/* Get flags for redirections and see for command conectors */
-	cf = _def_flags(line, fd, ret, inter, &flags, &t, &f), cmd2 = f;
+	cf = _def_flags(line, fd, ret, inter, &flags, &t, &f), *cmd2 = f;
 	if (cf == ERROR)
 		return (NULL);
 	/* If necessary open files for redirection */
