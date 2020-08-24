@@ -29,12 +29,13 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char **cmd2)
 		return (line);
 	}
 	/* Get flags for redirections and see for command conectors */
-	cf = _def_flags(line, fd, ret, opt[--op], inter, &flags, &t, &f), *cmd2 = f;
+	cf = _def_flags(line, fd, ret, opt[--op], inter, &flags, &t, &f);
+	fd[OPER] = ret, *cmd2 = f;
 	if (cf == ERROR)
 		return (NULL);
 	/* If necessary open files for redirection */
 	if (ret == PIPE || ret == OR || ret == AND || ret == SC || ret == COMM)
-		*(fd + WRITE_END) = (ret != PIPE) ? STDOUT_FILENO : *(fd + WRITE_END);
+		*(fd + WRITE_END) = (ret == COMM) ? STDOUT_FILENO : *(fd + WRITE_END);
 	else
 		*(fd + WRITE_END) = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (ret == LT || ret == LT2)	/* Control for < */

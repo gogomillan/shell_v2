@@ -1,6 +1,6 @@
 #include "hsh.h"
 
-int _test_cmd(char *sentence, char **av, char **env, size_t *execnt);
+int _test_cmd(char *sentence, char **av, lenv_s **lenv, size_t *execnt);
 char *_path_cmd(char **argv, lenv_s **lenv, char *pathos);
 int _cmdln(char *line, char **ml, char **tm, char ***ar, int *ac, char **av);
 
@@ -16,25 +16,33 @@ int _cmdln(char *line, char **ml, char **tm, char ***ar, int *ac, char **av);
 int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 {
 	pid_t pid1, pid2;
-	int argc, j, status = 0, ret = 0, es = 0; /* ret = return, es = exit status */
+	int argc, j, status = 0, ret = 0, ret1 = 0, es = 0; /* es = exit status */
 	char *sentence = NULL, *pathos, **env = menv(lenv);
-	char *sntc = NULL, *myline, *tmp, **av2;
+	char *sntc = NULL, *myline, *tmp, **av2, buf[10];
 
 	pathos = _getenv("PATH", lenv);						/* Get the PATH */
 	/* Make sentence with path */
 	sentence = _path_cmd(argv, lenv, pathos);			/* Full sentence */
-	ret = _test_cmd(sentence, argv, env, execnt);		/* Is correct? */
-	if (ret != NO_OTHER)
-		return ((*(fd + WRITE_END) != CLOSED) ? 0 : ret);
+	ret = _test_cmd(sentence, argv, lenv, execnt);		/* Is correct? */
+	if (fd[OPER] != PIPE && fd[OPER] != OR)
+		if (ret != NO_OTHER)
+		{	free(env);
+			return ((*(fd + WRITE_END) != CLOSED) ? 0 : ret);
+		}
 	/* If a second sentence from command line */
 	if (fd[READ_END] != CLOSED && cmd2 != NULL)
 	{
 		j = _cmdln(cmd2, &myline, &tmp, &av2, &argc, argv);	/* Make stack for execv*/
 		sntc = _path_cmd(av2, lenv, pathos);				/* Full sentence */
-		ret = _test_cmd(sntc, av2, env, execnt);			/* Is correct? */
-		if (ret != NO_OTHER)
-			return (ret);
+		ret1 = _test_cmd(sntc, av2, lenv, execnt);			/* Is correct? */
+		if (ret1 != NO_OTHER && fd[OPER] != OR)
+		{	free(env), free(sntc), free(myline), free(tmp), free(av2), free(sentence);
+			return (ret1);
+		}
 	}
+	if (fd[OPER] == OR)
+		if (ret == 127 && ret1 == 127)
+			return (127);
 	/* Create a child process */
 	pid1 = fork();
 	if (pid1 == -1)					/* If any error from fork */
@@ -43,20 +51,28 @@ int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 	}
 	else if (pid1 == 0)				/* Execute the command in the child */
 	{
-		if (fd[READ_END] != CLOSED && cmd2 != NULL)	/* There is a second sentence */
+		/* If there is a second sentence */
+		if (fd[OPER] == PIPE || fd[OPER] == SC || fd[OPER] == OR || fd[OPER] == AND)
 		{	close(fd[WRITE_END]);
-			_dup(fd[READ_END], STDIN_FILENO);
+			if (fd[OPER] == PIPE && fd[READ_END] != CLOSED && cmd2 != NULL)	/* PIPE */
+				_dup(fd[READ_END], STDIN_FILENO);
+			else
+			{	read(fd[READ_END], buf, 2), buf[2] = '\0';
+				close(fd[READ_END]);
+				if (_strcmp(buf, "NO") == 0 || ret1 != NO_OTHER)
+					sntc = "/bin/true", *(av2 + 1) = "true", *(av2 + 2) = NULL;
+			}
 			if (execve(sntc, (av2 + 1), env) == -1)
 				exit(127);
-		}
-		else
+		} else		/* No second sentence */
 		{	ret = (fd[WRITE_END] != CLOSED) ? _dup(fd[WRITE_END], fd[STDIN_OUT]) : ret;
 			if (execve(sentence, (argv + 1), env) == -1)
 				exit(127);
 		}
 	} else							/* The parent wait for the child */
 	{
-		if (fd[READ_END] != CLOSED && cmd2 != NULL)	/* There is a second sentence */
+		/* If there is a second sentence */
+		if (fd[OPER] == PIPE || fd[OPER] == SC || fd[OPER] == OR || fd[OPER] == AND)
 		{	pid2 = fork();					/* Create a child process */
 			if (pid2 == -1)					/* If any error from fork */
 			{	perror("Error:");
@@ -64,7 +80,10 @@ int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 			}
 			else if (pid2 == 0)				/* Execute the command in the child */
 			{	close(fd[READ_END]);
-				_dup(fd[WRITE_END], STDOUT_FILENO);
+				if (fd[OPER] == PIPE && fd[READ_END] != CLOSED && cmd2 != NULL) /* PIPE */
+					_dup(fd[WRITE_END], STDOUT_FILENO);
+				if (ret != NO_OTHER)
+					sentence = "/bin/false", *(av2 + 1) = "false", *(av2 + 2) = NULL;
 				if (execve(sentence, (argv + 1), env) == -1)
 					exit(127);
 			} else
@@ -72,6 +91,13 @@ int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 				wait(&status);
 				if (WIFEXITED(status))
 					es = WEXITSTATUS(status);
+				if (fd[OPER] != PIPE)	/* Msg for first child */
+				{
+					if (fd[OPER] == OR && es == 0)
+						write(fd[WRITE_END], "NO", 2);
+					else
+						write(fd[WRITE_END], "GO", 2);
+				}
 				/* Close both sides of pipe to release the consumer process */
 				close(fd[READ_END]), close(fd[WRITE_END]);
 				/* Wait for the reader child */
@@ -79,17 +105,21 @@ int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 				if (WIFEXITED(status))
 					es = WEXITSTATUS(status);
 			}
-		} else
-		{	wait(&status);
+		} else		/* No second sentence */
+		{
+			wait(&status);
 			if (WIFEXITED(status))
 				es = WEXITSTATUS(status);
 		}
 	}
 	free(sentence), free(env);
 	if (fd[READ_END] != CLOSED && cmd2 != NULL)
+	{
 		free(av2), free(tmp), free(myline), free(sntc);
+	}
 	(fd[LT2_OUT] != CLOSED) ? unlink(TMP_FILE) : j;
 	fd[LT2_OUT] = fd[READ_END] = fd[WRITE_END] = CLOSED;
+	fd[OPER] = FALSE;
 	return (es);
 }
 
@@ -120,16 +150,15 @@ char *_path_cmd(char **argv, lenv_s **lenv, char *pathos)
  * _test_cmd - Verify the command
  * @sentence: The command sentence
  * @argv: The cmmand arguments
- * @env: The environment
+ * @lenv: The environment
  * @execnt: The execution command line counter
  * Return: Exit code on error or NO_OTHER
  */
-int _test_cmd(char *sentence, char **argv, char **env, size_t *execnt)
+int _test_cmd(char *sentence, char **argv, lenv_s **lenv, size_t *execnt)
 {
-	char msg[160];
+	char msg[160], **env = menv(lenv);
 	int isnull = FALSE;
 	struct stat st;
-
 	/* Evaluate if there is a sentence */
 	st.st_mode = 0;
 	if (sentence != NULL)
@@ -153,5 +182,6 @@ int _test_cmd(char *sentence, char **argv, char **env, size_t *execnt)
 		return (127);
 	}
 	/* no problem */
+	free(env);
 	return (NO_OTHER);
 }

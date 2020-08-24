@@ -86,7 +86,7 @@ int _def_flags(char *line, int *fd, char re, char sym, int in,
 		*flag = O_CREAT | O_WRONLY | O_APPEND;
 	else if (re == COMM)	/* For # */
 		*flag = O_COMM;
-	else if (re == PIPE)	/* For pipe "|" */
+	else if (re == PIPE || re == SC || re == OR || re == AND)	/* For pipe "|" */
 	{
 		if (pipe(pipefd) == -1)
 		{   perror("pipe");

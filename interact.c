@@ -15,7 +15,7 @@ int interact(char **av, lenv_s **lenv, size_t *execnt)
 {
 	size_t len = 1024;
 	int read = 1, j, argc = 0, inter = 1, (*f)() = NULL, builtin;
-	int ret = 0, fd[4] = {CLOSED, CLOSED, STDOUT_FILENO, CLOSED};
+	int ret = 0, fd[5] = {CLOSED, CLOSED, STDOUT_FILENO, CLOSED, FALSE};
 	char **argv = NULL, *line = NULL, *tmp = NULL, *myline = NULL, *cmd2 = NULL;
 
 	line = malloc(len);
@@ -33,7 +33,8 @@ int interact(char **av, lenv_s **lenv, size_t *execnt)
 		}
 		if (_split_oper(line, fd, execnt, inter, &cmd2) == NULL)/*Op: > >>< << | ||*/
 		{	ret = fd[WRITE_END], addhist(argv), (*execnt)++;
-			fd[WRITE_END] = CLOSED, cmd2 = NULL;
+			fd[LT2_OUT] = fd[READ_END] = fd[WRITE_END] = CLOSED;
+			fd[OPER] = FALSE, cmd2 = NULL;
 			continue;
 		}
 		j = _cmdln(line, &myline, &tmp, &argv, &argc, av);	/* Stack for the cmdline*/
