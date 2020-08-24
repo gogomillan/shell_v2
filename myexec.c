@@ -1,6 +1,6 @@
 #include "hsh.h"
 
-int _test_cmd(char *sentence, char **av, char **env, size_t *execnt, int *fd);
+int _test_cmd(char *sentence, char **av, char **env, size_t *execnt);
 char *_path_cmd(char **argv, lenv_s **lenv, char *pathos);
 int _cmdln(char *line, char **ml, char **tm, char ***ar, int *ac, char **av);
 
@@ -23,15 +23,15 @@ int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 	pathos = _getenv("PATH", lenv);						/* Get the PATH */
 	/* Make sentence with path */
 	sentence = _path_cmd(argv, lenv, pathos);			/* Full sentence */
-	ret = _test_cmd(sentence, argv, env, execnt, fd);	/* Is correct? */
+	ret = _test_cmd(sentence, argv, env, execnt);		/* Is correct? */
 	if (ret != NO_OTHER)
-		return (ret);
+		return ((*(fd + WRITE_END) != CLOSED) ? 0 : ret);
 	/* If a second sentence from command line */
 	if (fd[READ_END] != CLOSED && cmd2 != NULL)
 	{
 		j = _cmdln(cmd2, &myline, &tmp, &av2, &argc, argv);	/* Make stack for execv*/
 		sntc = _path_cmd(av2, lenv, pathos);				/* Full sentence */
-		ret = _test_cmd(sntc, av2, env, execnt, fd);		/* Is correct? */
+		ret = _test_cmd(sntc, av2, env, execnt);			/* Is correct? */
 		if (ret != NO_OTHER)
 			return (ret);
 	}
@@ -122,10 +122,9 @@ char *_path_cmd(char **argv, lenv_s **lenv, char *pathos)
  * @argv: The cmmand arguments
  * @env: The environment
  * @execnt: The execution command line counter
- * @fd: The file descriptors
  * Return: Exit code on error or NO_OTHER
  */
-int _test_cmd(char *sentence, char **argv, char **env, size_t *execnt, int *fd)
+int _test_cmd(char *sentence, char **argv, char **env, size_t *execnt)
 {
 	char msg[160];
 	int isnull = FALSE;
@@ -151,12 +150,7 @@ int _test_cmd(char *sentence, char **argv, char **env, size_t *execnt, int *fd)
 		sprintf(msg, "%s: %ld: %s: not found\n", argv[0], *execnt, argv[1]);
 		write(STDERR_FILENO, &msg, _strlen(msg));
 		free(env);
-		if (*(fd + WRITE_END) == CLOSED)
-			return (127);
-		else if (*(fd + READ_END) == CLOSED)
-			return (0);
-		else
-			return (127);
+		return (127);
 	}
 	/* no problem */
 	return (NO_OTHER);
