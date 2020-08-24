@@ -113,8 +113,9 @@ int _dup(int fd, char inout);
 void _unexpected_redir(size_t execnt);
 void _cannot_create(char ret, char *f, size_t execnt);
 int _rdheredoc(char *f, int inter);
-int _def_flags(char *, int *, char, int, int *, char **, char **);
+int _def_flags(char *, int *, char, char, int, int *, char **, char **);
 int _cmm_case(char *line);
+void _hide_char(char *str, char ctoh, char cio);
 
 /* strings functions */
 int _strlen(char *s);

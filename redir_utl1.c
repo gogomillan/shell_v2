@@ -47,27 +47,29 @@ void _cannot_create(char ret, char *f, size_t execnt)
  * _def_flags - Define flags for redirection
  * @line: The command line
  * @fd: The file descriptors array for redirection
- * @re: What symbol "> >> < << | || && ; #"
+ * @re: What symbol code for "> >> < << | || && ; #"
+ * @sym: The symbol as a single char
  * @in: Interactive [0 | 1]
  * @flag: Flags
  * @t: Token to command
  * @f: Token to file name
  * Return: Erase the file [TRUE | FALSE] or ERROR
  */
-int _def_flags(char *line, int *fd, char re, int in,
+int _def_flags(char *line, int *fd, char re, char sym, int in,
 		int *flag, char **t, char **f)
 {
 	int pipefd[2], ret = FALSE;
-	char *opt = "><|&;#", *tmp = NULL;
+	char opt[] = {'\0', '\0'}, *tmp = NULL;
 
-	tmp = _strdup(line), *t = strtok(tmp, opt), *f = strtok(NULL, opt);
+	opt[0] = sym, _hide_char(line, sym, '\v'), tmp = _strdup(line);
+	*t = strtok(tmp, opt), *f = strtok(NULL, opt);
 	/* Special contitions > file or < file */
 	if (*t != NULL && *f != NULL)
 		*t = strtok(line, opt), *f = strtok(NULL, opt);	/* cmd oper cmd */
 	else
-		*f = strtok(line, opt), *t = line, ret = TRUE;	/* redirect file_name */
+		*f = strtok(line, opt), *t = line, ret = TRUE;	/* cases: < file or > file */
 	/* Trimp chars from beginning and end for file name or next command */
-	free(tmp);
+	free(tmp), _hide_char(*t, '\v', sym), _hide_char(*f, '\v', sym);
 	*f = _trim(*f, ' '), *f = _trim(*f, '\t');
 	*f = _trim(*f, '\n'), *f = _trim(*f, '\r');
 	/* Evaluate the flags needed */
@@ -99,20 +101,51 @@ int _def_flags(char *line, int *fd, char re, int in,
 }
 
 /**
- * _cmm_case - Special case for comments
- * @line: The command line
- * Return: [ COMM | FALSE ]
+ * _trim - Trim characteres at the beginning and end of a string
+ * @str: String
+ * @c: Character to trim
+ * Return: A pointer to the new position to start the string
  */
-int _cmm_case(char *line)
+char *_trim(char *str, char c)
 {
-	char *p;
+	char *h = str, *t = str; /* Head and Tail of the string */
 
-	if (line == NULL)
-		return (FALSE);
-	/* if find the # and in at the beginning or after a blank, then OK */
-	p = _strchr(line, '#');
-	if (p == line || *(p - 1) == ' ' || *(p - 1) == '\t')
-		return (COMM);
-	/* Else isn't cosidered a comment */
-	return (FALSE);
+	if (str == NULL)		/* No string */
+		return (str);
+	if (_strlen(str) <= 0)	/* Empty string */
+		return (str);
+
+	while (*t++ != '\0')	/* Trim the char at the beginning */
+		if (*h == c)
+			h++;
+	t--, t--;
+	while (*t == c)			/* Trim the char at the end */
+		*t-- = '\0';
+	/* Return a pointer to the beginning */
+	return (h);
+}
+
+/**
+ * _dup - Duplicate the input or output
+ * @fd: File descriptor
+ * @inout: [STDIN_FILENO | STDOUT_FILENO]
+ * Return: Nothing
+ */
+int _dup(int fd, char inout)
+{
+	if (inout == STDOUT_FILENO)
+	{	/* Duplicate the file on the STDOUT stream */
+		if (dup2(fd, STDOUT_FILENO) == -1)
+		{   perror("dup2");
+			return (-1);
+		}
+	}
+	else if (inout == STDIN_FILENO)
+	{	/* Duplicate the file on the STDIN stream */
+		if (dup2(fd, STDIN_FILENO) == -1)
+		{   perror("dup2");
+			return (-1);
+		}
+	}
+	return (fd);
 }
