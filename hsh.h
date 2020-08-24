@@ -38,6 +38,7 @@
 #define WRITE_END  1
 #define STDIN_OUT  2
 #define LT2_OUT    3
+#define OPER       4
 #define TMP_FILE "mytemp.XXXXXX.JMGG.Holbies"
 
 extern char **environ;

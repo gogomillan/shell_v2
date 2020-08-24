@@ -1,0 +1,81 @@
+echo --
+echo "ls"
+echo "ls" | ./hsh
+echo $?
+echo --
+echo "> algo"
+echo "> algo" | ./hsh
+echo $?
+echo --
+echo "< algo"
+echo "< algo" | ./hsh
+echo $?
+echo --
+echo "ls"
+echo "ls" | ./hsh
+echo $?
+echo --
+echo "rm algo"
+echo "rm algo" | ./hsh
+echo $?
+echo --
+echo "< algo"
+echo "< algo" | ./hsh
+echo $?
+echo --
+echo "ls > lista"
+echo "ls > lista" | ./hsh
+echo $?
+echo --
+echo "echo HELLO MARS! >> lista"
+echo "echo HELLO MARS! >> lista" | ./hsh
+echo $?
+echo --
+echo "ls"
+echo "ls" | ./hsh
+echo $?
+echo --
+echo "cat lista"
+echo "cat lista" | ./hsh
+echo $?
+rm lista
+echo --
+echo "ls > tmp1/NO_EXISTE"
+echo "ls > tmp1/NO_EXISTE" | ./hsh
+echo $?
+echo --
+mkdir tmp
+chmod 000 tmp
+echo "ls > tmp/NO_EXISTE"
+echo "ls > tmp/NO_EXISTE" | ./hsh
+echo $?
+rm -rf tmp
+echo --
+echo "hbtn > NO_EXISTE"
+echo "hbtn > NO_EXISTE" | ./hsh
+echo $?
+echo --
+echo "rm NO_EXISTE"
+echo "rm NO_EXISTE" | ./hsh
+echo $?
+echo --
+echo "hbtn"
+echo "hbtn" | ./hsh
+echo $?
+echo --
+echo "ls >>> listonta"
+echo "ls >>> listonta" | ./hsh
+echo $?
+echo --
+echo "cat -e << JUAN
+Holi
+ JUAN
+JUAN 
+JUAN"
+echo "cat -e << JUAN
+Holi
+ JUAN
+JUAN 
+JUAN" | ./hsh
+echo $?
+echo --
