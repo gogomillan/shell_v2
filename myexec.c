@@ -153,8 +153,10 @@ int _test_cmd(char *sentence, char **argv, char **env, size_t *execnt, int *fd)
 		free(env);
 		if (*(fd + WRITE_END) == CLOSED)
 			return (127);
-		else
+		else if (*(fd + READ_END) == CLOSED)
 			return (0);
+		else
+			return (127);
 	}
 	/* no problem */
 	return (NO_OTHER);
