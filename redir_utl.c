@@ -29,7 +29,7 @@ char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char **cmd2)
 		return (line);
 	}
 	/* Get flags for redirections and see for command conectors */
-	cf = _def_flags(line, fd, ret, inter, &flags, &t, &f), *cmd2 = f;
+	cf = _def_flags(line, fd, ret, opt[--op], inter, &flags, &t, &f), *cmd2 = f;
 	if (cf == ERROR)
 		return (NULL);
 	/* If necessary open files for redirection */
@@ -64,83 +64,90 @@ char _find_oper(char *str, char oper)
 	/* Validate the no string option */
 	if (str == NULL)
 		return (FALSE);
+	/* Encode oper character when double quotes */
+	_hide_char(str, oper, '\v');
 	/* Find out for the oper in the string */
 	while ((p = _strchr(p, oper)) != NULL)
 	{
 		if (p != NULL)							/* Oper found */
 		{
 			if (oper == '#')	/* Find out comment special case*/
-				return (_cmm_case(str));
+			{	_hide_char(str, '\v', oper);
+				return (_cmm_case(str));	/* Decode and return */
+			}
 			if (*(p + 1) == oper)			/* Double oper found */
 			{
 				if (*(p + 2) == oper)	/* Triple oper found */
-					return (ERROR);
+				{	_hide_char(str, '\v', oper);
+					return (ERROR);			/* Decode and return */
+				}
 				else					/* If not return double oper */
+				{	_hide_char(str, '\v', oper);
 					return ((oper == '>') ? GT2 : ((oper == '<') ? LT2 :
 							((oper == '|') ? OR : ((oper == '&') ? AND :
-							((oper == '#') ? COMM : FALSE)))));
-			}
-			else							/* If not return sigle oper */
-			{
+							((oper == '#') ? COMM : FALSE)))));	/* Decode and return */
+				}
+			} else							/* If not return sigle oper */
+			{	_hide_char(str, '\v', oper);
 				return ((oper == '>') ? GT : ((oper == '<') ? LT :
 						((oper == '|') ? PIPE : ((oper == ';') ? SC :
-						((oper == '#') ? COMM : FALSE)))));
+						((oper == '#') ? COMM : FALSE)))));		/* decode and return */
 			}
 		}
 		p++;	/* Move the pointer if necessary */
 	}
-	/* Oper not found */
+	/* Oper not found -> decode and return */
+	_hide_char(str, '\v', oper);
 	return (FALSE);
 }
 
 /**
- * _trim - Trim characteres at the beginning and end of a string
- * @str: String
- * @c: Character to trim
- * Return: A pointer to the new position to start the string
+ * _hide_char - Change a character from ctoh to cio if there is a double quote
+ * @str: The string
+ * @ctoh: Char to hide
+ * @cio: Char instead of ctoh
  */
-char *_trim(char *str, char c)
+void _hide_char(char *str, char ctoh, char cio)
 {
-	char *h = str, *t = str; /* Head and Tail of the string */
+	char *p1 = str, *p2 = NULL;
 
-	if (str == NULL)		/* No string */
-		return (str);
-	if (_strlen(str) <= 0)	/* Empty string */
-		return (str);
-
-	while (*t++ != '\0')	/* Trim the char at the beginning */
-		if (*h == c)
-			h++;
-	t--, t--;
-	while (*t == c)			/* Trim the char at the end */
-		*t-- = '\0';
-	/* Return a pointer to the beginning */
-	return (h);
+	/* Verify if a correct string */
+	if (str == NULL)
+		return;
+	/* Look for an opening double quote */
+	p1 = _strchr(p1, '"');
+	if (p1 == NULL)
+		return;
+	/* Look for a closing double quote */
+	p2 = _strchr((p1 + 1), '"');
+	if (p2 == NULL)
+		return;
+	/* Look for the char to hide (ctoh) inside the quoting text */
+	while (p1 != p2)
+	{
+		if (*p1 == ctoh)
+			*p1 = cio;
+		p1++;
+	}
 }
 
 /**
- * _dup - Duplicate the input or output
- * @fd: File descriptor
- * @inout: [STDIN_FILENO | STDOUT_FILENO]
- * Return: Nothing
+ * _cmm_case - Special case for comments
+ * @line: The command line
+ * Return: [ COMM | FALSE ]
  */
-int _dup(int fd, char inout)
+int _cmm_case(char *line)
 {
-	if (inout == STDOUT_FILENO)
-	{	/* Duplicate the file on the STDOUT stream */
-		if (dup2(fd, STDOUT_FILENO) == -1)
-		{   perror("dup2");
-			return (-1);
-		}
-	}
-	else if (inout == STDIN_FILENO)
-	{	/* Duplicate the file on the STDIN stream */
-		if (dup2(fd, STDIN_FILENO) == -1)
-		{   perror("dup2");
-			return (-1);
-		}
-	}
-	return (fd);
+	char *p;
+
+	if (line == NULL)
+		return (FALSE);
+	/* if find the # and in at the beginning or after a blank, then OK */
+	p = _strchr(line, '#');
+	if (p == line || *(p - 1) == ' ' || *(p - 1) == '\t')
+		return (COMM);
+	/* Else isn't cosidered a comment */
+	return (FALSE);
 }
 
 /**
