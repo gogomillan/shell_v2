@@ -1,0 +1,60 @@
+echo --
+echo "echo \"echo Holberton | hbtn\" | sh"
+echo "echo Holberton | hbtn" | sh
+echo 127
+echo "echo Holberton | hbtn" | ./hsh
+echo $?
+echo --
+echo "echo \"hbtn | rev\""
+echo "hbtn | rev" | sh
+echo 0
+echo "hbtn | rev" | ./hsh
+echo $?
+echo --
+echo "echo \"ls /hbtn | rev\" | sh"
+echo "ls /hbtn | rev" | sh
+echo 0
+echo "ls /hbtn | rev" | ./hsh
+echo $?
+echo --
+echo "echo \"echo Holberton | cat -e\" | sh"
+echo "echo Holberton | cat -e" | sh
+echo 0
+echo "echo Holberton | cat -e" | ./hsh
+echo $?
+echo --
+echo "echo \"echo Holberton | cat -e | cat -e\" | sh"
+echo "echo Holberton | cat -e | cat -e" | sh
+echo 0
+echo "echo Holberton | cat -e | cat -e" | ./hsh
+echo $?
+echo --
+echo "echo \"echo Holberton | rev\" | sh"
+echo "echo Holberton | rev" | sh
+echo 0
+echo "echo Holberton | rev" | ./hsh
+echo $?
+echo --
+echo "echo \"echo Holberton|rev\" | sh"
+echo "echo Holberton|rev" | sh
+echo 0
+echo "echo Holberton|rev" | ./hsh
+echo $?
+echo --
+echo "echo \"echo Holberton |rev\" | sh"
+echo "echo Holberton |rev" | sh
+echo 0
+echo "echo Holberton |rev" | ./hsh
+echo $?
+echo --
+echo "echo \"echo Holberton| rev\" | sh"
+echo "echo Holberton| rev" | sh
+echo 0
+echo "echo Holberton| rev" | ./hsh
+echo $?
+echo --
+echo "echo \"echo Holberton | rev | rev\" | sh"
+echo "echo Holberton | rev | rev" | sh
+echo 0
+echo "echo Holberton | rev | rev" | ./hsh
+echo $?
