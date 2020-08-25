@@ -282,8 +282,8 @@ gonza-juan-p@~$
         + Should print something on stderr on failure
     + unsetenv
         + Remove a environment variable
-    + Command syntax: unsetenv VARIABLE
-Should print something on stderr on failure
+        + Command syntax: unsetenv VARIABLE
+        + Should print something on stderr on failure
 
 ## Authors
 
