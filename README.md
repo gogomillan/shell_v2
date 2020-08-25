@@ -95,6 +95,10 @@ vagrant@~$
 ```
 ## Examples
 
+#### hsh 1.0 +
+- Handle the right stream redirection ">"
+- Usage: "command > output_file"
+
 ## Authors
 
 **Juan Marcos Cabezas**
