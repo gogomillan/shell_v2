@@ -305,6 +305,7 @@ gonza-juan-pc@ubuntu:~/shell$
 - Handle Ctrl+C: your shell should not quit when the user inputs ^C
 
     + Implement the alias builtin command
+    + Usage: alias [name[='value'] ...]
 
 
 ## Authors
