@@ -11,45 +11,82 @@
  */
 char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char **cmd2)
 {
-	int flags, cf, op = 0;
+	int flags = NO_OTHER, cf, op = 0;
 	char *opt = "><|&;#";
 	char ret = FALSE, *t = NULL, *f = NULL;
 
-	/* Looking for an operator */
-	*(fd + STDIN_OUT) = STDOUT_FILENO, (void)cmd2;
-	for (op = 0; op < _strlen(opt) && ret == FALSE; op++)
+	/* Set clue info */
+	*(fd + STDIN_OUT) = STDOUT_FILENO, (void)cmd2, *(fd + WRITE_END) = CLOSED;
+	*(_strchr(line, '\n')) = '\0';
+	if (_is_err_syntax(line, ";|&", *execnt) != FALSE)		/* Verify Syntax */
+	{	*(fd + WRITE_END) = 2;
+		return (NULL);
+	}
+	for (op = 0; op < _strlen(opt) && ret == FALSE; op++)	/*Look for an operator*/
 		ret = _find_oper(line, opt[op]);
-	/* Verify error or false result */
 	if (ret == ERROR)
 	{	 _unexpected_redir(*execnt), *(fd + WRITE_END) = 2;
 		return (NULL);
 	}
 	else if (ret == FALSE)
-	{	*(fd + WRITE_END) = CLOSED;
 		return (line);
-	}
-	/* Get flags for redirections and see for command conectors */
-	cf = _def_flags(line, fd, ret, opt[--op], inter, &flags, &t, &f);
-	fd[OPER] = ret, *cmd2 = f;
+	cf = _def_flags(line, fd, ret, opt[--op], inter, &flags, &t, &f);	/*Get flag*/
+	*cmd2 = f, ret = fd[OPER];
 	if (cf == ERROR)
 		return (NULL);
-	/* If necessary open files for redirection */
-	if (ret == PIPE || ret == OR || ret == AND || ret == SC || ret == COMM)
+	if (ret == FALSE || ret == PIPE || ret == OR || ret == AND || ret == SC ||
+		ret == COMM)															/* When pipe */
 		*(fd + WRITE_END) = (ret == COMM) ? STDOUT_FILENO : *(fd + WRITE_END);
-	else
+	else																		/* When redirction */
 		*(fd + WRITE_END) = open(f, flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-	if (ret == LT || ret == LT2)	/* Control for < */
+	if (ret == LT || ret == LT2)												/* Control for < */
 		*(fd + STDIN_OUT) = STDIN_FILENO;
-	if (*(fd + WRITE_END) == ERROR)	/* If fail openning */
+	if (*(fd + WRITE_END) == ERROR)												/* If fail openning */
 	{	_cannot_create(ret, f, *execnt), *(fd + WRITE_END) = 2;
 		return (NULL);
 	}
-	if (cf == TRUE)					/* Close file when cmd line starts with < or > */
+	if (ret != FALSE && cf == TRUE)				/* Close file if line starts with < or > */
 	{	(flags == NO_OTHER) ? close(*(fd + WRITE_END)) : flags;
 		*(fd + WRITE_END) = 0;
 		return (NULL);
 	}
 	return (line);
+}
+
+/**
+ * _is_err_syntax - Look for an unexpected char in a string
+ * @s: The string
+ * @c: A string with the chars
+ * @execnt: Command line counter
+ * Return: [TRUE | FALSE | ERROR]
+ */
+int _is_err_syntax(char *s, char *c, size_t execnt)
+{
+	char *before, *after, *tmp, buf[2] = {'\0', '\0'};
+
+	/* Verify the string */
+	if (s == NULL)
+		return (ERROR);
+	if (_strlen(s) == 0)
+		return (FALSE);
+	/* Look for a single special char */
+	tmp = _strdup(s);
+	while (*c++ != '\0')
+	{
+		buf[0] = *(c - 1);
+		before = strtok(tmp, buf);
+		after = strtok(NULL, buf);
+		/* ($) ;[ENTER] or ($) |[ENTER] or ($) & or[ENTER] ($) || or[ENTER] */
+		/* ($) &&[ENTER] become NULL both sides after strtok */
+		if (before == NULL && after == NULL)
+		{
+			free(tmp);
+			_unexpected_char(execnt, buf[0]);
+			return (TRUE);
+		}
+	}
+	free(tmp);
+	return (FALSE);
 }
 
 /**
@@ -100,36 +137,6 @@ char _find_oper(char *str, char oper)
 	/* Oper not found -> decode and return */
 	_hide_char(str, '\v', oper);
 	return (FALSE);
-}
-
-/**
- * _hide_char - Change a character from ctoh to cio if there is a double quote
- * @str: The string
- * @ctoh: Char to hide
- * @cio: Char instead of ctoh
- */
-void _hide_char(char *str, char ctoh, char cio)
-{
-	char *p1 = str, *p2 = NULL;
-
-	/* Verify if a correct string */
-	if (str == NULL)
-		return;
-	/* Look for an opening double quote */
-	p1 = _strchr(p1, '"');
-	if (p1 == NULL)
-		return;
-	/* Look for a closing double quote */
-	p2 = _strchr((p1 + 1), '"');
-	if (p2 == NULL)
-		return;
-	/* Look for the char to hide (ctoh) inside the quoting text */
-	while (p1 != p2)
-	{
-		if (*p1 == ctoh)
-			*p1 = cio;
-		p1++;
-	}
 }
 
 /**

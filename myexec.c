@@ -24,28 +24,28 @@ int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 	/* Make sentence with path */
 	sentence = _path_cmd(argv, lenv, pathos);			/* Full sentence */
 	ret = _test_cmd(sentence, argv, lenv, execnt);		/* Is correct? */
-	if (fd[OPER] != PIPE && fd[OPER] != OR)
+	if (fd[OPER] != PIPE && fd[OPER] != OR && fd[OPER] != SC)
 		if (ret != NO_OTHER)
 		{	free(env);
 			return ((*(fd + WRITE_END) != CLOSED) ? 0 : ret);
 		}
 	/* If a second sentence from command line */
-	if (fd[READ_END] != CLOSED && cmd2 != NULL)
+	if (fd[OPER] == SC || fd[OPER] == PIPE || fd[OPER] == AND || fd[OPER] == OR)
 	{
 		j = _cmdln(cmd2, &myline, &tmp, &av2, &argc, argv);	/* Make stack for execv*/
 		sntc = _path_cmd(av2, lenv, pathos);				/* Full sentence */
 		ret1 = _test_cmd(sntc, av2, lenv, execnt);			/* Is correct? */
-		if (ret1 != NO_OTHER && fd[OPER] != OR)
+		if (ret1 != NO_OTHER && fd[OPER] != OR && fd[OPER] != SC)
 		{	free(env), free(sntc), free(myline), free(tmp), free(av2), free(sentence);
 			return (ret1);
 		}
 	}
-	if (fd[OPER] == OR)
+	if (fd[OPER] == OR)		/* Exit code when both sides have error */
 		if (ret == 127 && ret1 == 127)
 			return (127);
 	/* Create a child process */
 	pid1 = fork();
-	if (pid1 == -1)					/* If any error from fork */
+	if (pid1 == ERROR)					/* If any error from fork */
 	{	perror("Error:");
 		return (1);
 	}
@@ -53,20 +53,29 @@ int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 	{
 		/* If there is a second sentence */
 		if (fd[OPER] == PIPE || fd[OPER] == SC || fd[OPER] == OR || fd[OPER] == AND)
-		{	close(fd[WRITE_END]);
+		{
+			/**
+			 * This point to evaluate if there is a next command
+			 * If there is then
+			 * - Create a pipe
+			 * - Fork
+			 * - Call the myexec for that command and next if exist (Resursive)
+			 * Wait for the child and exit
+			 */
+			close(fd[WRITE_END]);
 			if (fd[OPER] == PIPE && fd[READ_END] != CLOSED && cmd2 != NULL)	/* PIPE */
-				_dup(fd[READ_END], STDIN_FILENO);
-			else
-			{	read(fd[READ_END], buf, 2), buf[2] = '\0';
+				_dup(fd[READ_END], STDIN_FILENO);			/* redir stdin */
+			else															/* Others */
+			{	read(fd[READ_END], buf, 2), buf[2] = '\0';	/* Read msg */
 				close(fd[READ_END]);
 				if (_strcmp(buf, "NO") == 0 || ret1 != NO_OTHER)
 					sntc = "/bin/true", *(av2 + 1) = "true", *(av2 + 2) = NULL;
 			}
-			if (execve(sntc, (av2 + 1), env) == -1)
+			if (execve(sntc, (av2 + 1), env) == ERROR)	/* Exec the second sentence */
 				exit(127);
 		} else		/* No second sentence */
 		{	ret = (fd[WRITE_END] != CLOSED) ? _dup(fd[WRITE_END], fd[STDIN_OUT]) : ret;
-			if (execve(sentence, (argv + 1), env) == -1)
+			if (execve(sentence, (argv + 1), env) == ERROR)
 				exit(127);
 		}
 	} else							/* The parent wait for the child */
@@ -74,7 +83,7 @@ int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 		/* If there is a second sentence */
 		if (fd[OPER] == PIPE || fd[OPER] == SC || fd[OPER] == OR || fd[OPER] == AND)
 		{	pid2 = fork();					/* Create a child process */
-			if (pid2 == -1)					/* If any error from fork */
+			if (pid2 == ERROR)					/* If any error from fork */
 			{	perror("Error:");
 				return (1);
 			}
@@ -84,7 +93,7 @@ int myexec(char **argv, lenv_s **lenv, size_t *execnt, int *fd, char *cmd2)
 					_dup(fd[WRITE_END], STDOUT_FILENO);
 				if (ret != NO_OTHER)
 					sentence = "/bin/false", *(av2 + 1) = "false", *(av2 + 2) = NULL;
-				if (execve(sentence, (argv + 1), env) == -1)
+				if (execve(sentence, (argv + 1), env) == ERROR)
 					exit(127);
 			} else
 			{	/* Wait for the writter child */
@@ -134,6 +143,8 @@ char *_path_cmd(char **argv, lenv_s **lenv, char *pathos)
 {
 	char *sentence = NULL, *tmp = NULL;
 
+	if (argv == NULL)
+		return (NULL);
 	if (_strncmp(pathos, ":", 1) == 0 || pathos == NULL) /* if bad PATH */
 	{
 		tmp = _strdup(argv[1]), sentence = tmp;

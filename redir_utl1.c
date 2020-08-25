@@ -1,6 +1,22 @@
 #include "hsh.h"
 
 /**
+ * _unexpected_char - Message for Syntax error: "char" unexpected
+ * @execnt: Command line counter
+ * @c: The character unexpected
+ * Return: Nothing
+ */
+void _unexpected_char(size_t execnt, char c)
+{
+	char msg[161];
+
+	sprintf(msg, "%s: %ld: Syntax error: \"%c\" unexpected\n",
+	"./hsh", execnt, c);
+	/* sh: 2: Syntax error: "|" unexpected */
+	write(STDERR_FILENO, &msg, _strlen(msg));
+}
+
+/**
  * _unexpected_redir - Message for Syntax error: redirection unexpected
  * @execnt: Command line counter
  * Return: Nothing
@@ -62,17 +78,17 @@ int _def_flags(char *line, int *fd, char re, char sym, int in,
 	char opt[] = {'\0', '\0'}, *tmp = NULL;
 
 	opt[0] = sym, _hide_char(line, sym, '\v'), tmp = _strdup(line);
-	*t = strtok(tmp, opt), *f = strtok(NULL, opt);
-	/* Special contitions > file or < file */
-	if (*t != NULL && *f != NULL)
+	*t = strtok(tmp, opt), *f = strtok(NULL, opt); /*For eval special contitions*/
+	if ((*t != NULL && *f != NULL) || re == SC)
 		*t = strtok(line, opt), *f = strtok(NULL, opt);	/* cmd oper cmd */
 	else
 		*f = strtok(line, opt), *t = line, ret = TRUE;	/* cases: < file or > file */
 	/* Trimp chars from beginning and end for file name or next command */
 	free(tmp), _hide_char(*t, '\v', sym), _hide_char(*f, '\v', sym);
-	*f = _trim(*f, ' '), *f = _trim(*f, '\t');
-	*f = _trim(*f, '\n'), *f = _trim(*f, '\r');
-	/* Evaluate the flags needed */
+	*f = _trim(*f, ' '), *f = _trim(*f, '\t'), *f = _trim(*f, '\n');
+	*f = _trim(*f, '\r'), *t = _trim(*t, ' '), *t = _trim(*t, '\t');
+	*t = _trim(*t, '\n'), *t = _trim(*t, '\r');
+	fd[OPER] = (*f == NULL) ? FALSE : re, re = fd[OPER];	/* Flags */
 	if (re == GT)			/* Open the file for create ">" */
 		*flag = O_CREAT | O_WRONLY | O_TRUNC;
 	else if (re == LT)		/* Open the file for read "<" */
@@ -98,31 +114,6 @@ int _def_flags(char *line, int *fd, char re, char sym, int in,
 		*flag = NO_OTHER;
 	/* This reurns let's know if the redirection file is a tmp */
 	return (ret);
-}
-
-/**
- * _trim - Trim characteres at the beginning and end of a string
- * @str: String
- * @c: Character to trim
- * Return: A pointer to the new position to start the string
- */
-char *_trim(char *str, char c)
-{
-	char *h = str, *t = str; /* Head and Tail of the string */
-
-	if (str == NULL)		/* No string */
-		return (str);
-	if (_strlen(str) <= 0)	/* Empty string */
-		return (str);
-
-	while (*t++ != '\0')	/* Trim the char at the beginning */
-		if (*h == c)
-			h++;
-	t--, t--;
-	while (*t == c)			/* Trim the char at the end */
-		*t-- = '\0';
-	/* Return a pointer to the beginning */
-	return (h);
 }
 
 /**

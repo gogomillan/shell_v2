@@ -1,0 +1,19 @@
+echo --
+echo "echo \";\" | ./hsh"
+echo ";" | sh
+echo $?
+echo ";" | ./hsh
+echo $?
+echo --
+echo "echo \"|\" | ./hsh"
+echo "|" | sh
+echo $?
+echo "|" | ./hsh
+echo $?
+echo --
+echo "echo \"&\" | ./hsh"
+echo "&" | sh
+echo $?
+echo "&" | ./hsh
+echo $?
+

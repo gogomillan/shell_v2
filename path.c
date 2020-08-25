@@ -15,7 +15,9 @@ int j, k;
 char *str1, *token, *tmp = NULL, **env = menv(lenv);
 static char **paths, *pa;
 	if (name == NULL)
+	{	free(env);
 		return (NULL);
+	}
 	if (_strncmp(name, "FLUSH", 5) == 0)
 	{	free(pa), free(paths), free(env);
 		return (NULL);
