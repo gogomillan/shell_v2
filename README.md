@@ -273,6 +273,18 @@ backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tm
 gonza-juan-p@~$
 ```
 
+#### hsh 1.8 +
+- Implement the setenv and unsetenv builtin commands
+
+    + setenv
++ Initialize a new environment variable, or modify an existing one
+Command syntax: setenv VARIABLE VALUE
+Should print something on stderr on failure
+unsetenv
+Remove a environment variable
+Command syntax: unsetenv VARIABLE
+Should print something on stderr on failure
+
 ## Authors
 
 **Juan Marcos Cabezas**
