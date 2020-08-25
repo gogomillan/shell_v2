@@ -278,9 +278,9 @@ gonza-juan-p@~$
 
     + setenv
         + Initialize a new environment variable, or modify an existing one
-Command syntax: setenv VARIABLE VALUE
++Command syntax: setenv VARIABLE VALUE
 Should print something on stderr on failure
-}unsetenv
+    + unsetenv
 Remove a environment variable
 Command syntax: unsetenv VARIABLE
 Should print something on stderr on failure
