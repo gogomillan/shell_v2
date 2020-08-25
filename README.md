@@ -288,8 +288,7 @@ gonza-juan-p@~$
 #### hsh 1.0 +
 - Handle Ctrl+C: your shell should not quit when the user inputs ^C
 ```
-gonza-juan-p@~$ ls /var || ls /var
-julien@ubuntu:~/shell$ ./hsh
+gonza-juan-pc@ubuntu:~/shell$ ./hsh
 $ ^C
 $ ^C
 $ ^C
@@ -299,7 +298,7 @@ $ ^C
 $ ^C
 $ ^C
 $ exit
-julien@ubuntu:~/shell$ 
+gonza-juan-pc@ubuntu:~/shell$ 
 ```
 
 
