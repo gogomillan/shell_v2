@@ -255,23 +255,22 @@ gonza-juan-pc@~$
 #### hsh 1.7 +
 - Handle the "||" logical operator
 ```
-gonza-juan-pc@~$ ls /var && ls /var
-alex@~$ ls /var || ls /var
+gonza-juan-p@~$ ls /var || ls /var
 backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-alex@~$ ls /hbtn || ls /var
-ls: cannot access /hbtn: No such file or directory
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-alex@~$ ls /hbtn || ls /hbtn || ls /hbtn || ls /var
-ls: cannot access /hbtn: No such file or directory
-ls: cannot access /hbtn: No such file or directory
+gonza-juan-p@~$ ls /hbtn || ls /var
 ls: cannot access /hbtn: No such file or directory
 backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-alex@~$ ls /hbtn || ls /hbtn || ls /hbtn || ls /var || ls /var
+gonza-juan-p@~$ ls /hbtn || ls /hbtn || ls /hbtn || ls /var
 ls: cannot access /hbtn: No such file or directory
 ls: cannot access /hbtn: No such file or directory
 ls: cannot access /hbtn: No such file or directory
 backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-alex@~$
+gonza-juan-p@~$ ls /hbtn || ls /hbtn || ls /hbtn || ls /var || ls /var
+ls: cannot access /hbtn: No such file or directory
+ls: cannot access /hbtn: No such file or directory
+ls: cannot access /hbtn: No such file or directory
+backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
+gonza-juan-p@~$
 ```
 
 ## Authors
