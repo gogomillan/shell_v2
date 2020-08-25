@@ -1,0 +1,36 @@
+echo "(1)--"
+echo "ls ;"
+echo "ls ;" | sh
+echo $?
+echo "ls ;" | ./hsh
+echo $?
+echo "(2)--"
+echo "ls ; ls"
+echo "ls ; ls" | sh
+echo 0
+echo "ls ; ls" | ./hsh
+echo $?
+echo "(3)--"
+echo "ls;ls"
+echo "ls;ls" | sh
+echo 0
+echo "ls;ls" | ./hsh
+echo $?
+echo "(4)--"
+echo "ls ; ls ; ls"
+echo "ls ; ls ; ls" | sh
+echo 0
+echo "ls ; ls ; ls" | ./hsh
+echo $?
+echo "(5)--"
+echo "/bin/ls hbtnFTW ; /bin/ls"
+echo "/bin/ls hbtnFTW ; /bin/ls" | sh
+echo 0
+echo "/bin/ls hbtnFTW ; /bin/ls" | ./hsh
+echo $?
+echo "(6)--"
+echo "/bin/ls hbtnFTW ; /bin/ls hbtnFTW"
+echo "/bin/ls hbtnFTW ; /bin/ls hbtnFTW" | sh
+echo 2
+echo "/bin/ls hbtnFTW ; /bin/ls hbtnFTW" | ./hsh
+echo $?

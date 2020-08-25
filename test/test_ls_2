@@ -1,2 +1,12 @@
-/bin/ls
-/bin/ls
+echo --
+echo "echo \"/bin/ls\" | ./hsh"
+echo "/bin/ls" | sh
+echo $?
+echo "/bin/ls" | ./hsh
+echo $?
+echo --
+echo "echo \"/bin/ls -l\" | ./hsh"
+echo "/bin/ls -l" | sh
+echo $?
+echo "/bin/ls -l" | ./hsh
+echo $?

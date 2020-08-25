@@ -1,2 +1,14 @@
-cd -
-/bin/pwd
+echo --
+echo "echo \"cd /tmp\" | ./hsh"
+echo "cd /tmp
+pwd" | sh
+echo "cd /tmp
+pwd" | ./hsh
+echo --
+echo "echo \"cd -\" | ./hsh"
+echo "cd -" | sh
+echo "cd -" | ./hsh
+echo --
+echo "echo \"pwd\" | ./hsh"
+echo "pwd" | sh
+echo "pwd" | ./hsh
