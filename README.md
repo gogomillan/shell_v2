@@ -174,7 +174,7 @@ gonza-juan-pc@~$
 
 ```
 #### hsh 1.4 +
-- Handle the double left stream redirection << (also known as heredoc)
+- Handle the pipe stream redirection "|"
 - Usage: "command << delimiter"
 ```
 gonza-juan-pc@~$ cat -e << HOLBERTON
