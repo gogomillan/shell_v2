@@ -153,14 +153,22 @@ gonza-juan-pc@~$
 ```
 #### hsh 1.3 +
 - Handle the double left stream redirection << (also known as heredoc)
-- Usage: "command < output_file"
+- Usage: "command << delimiter"
 ```
-gonza-juan-pc@~$ cat -e small_file 
-Holberton$
-Second line$
-gonza-juan-pc@~$ rev < small_file
-notrebloH
-enil dnoceS
+gonza-juan-pc@~$ cat -e << HOLBERTON
+> qwertyuiop
+> ls -l                          
+> cat -e small_file
+> HOLBERTONnope
+> nopeHOLBERTON
+> HOLBERTON 
+> HOLBERTON
+qwertyuiop$
+ls -l$
+cat -e small_file$
+HOLBERTONnope$
+nopeHOLBERTON$
+HOLBERTON $
 gonza-juan-pc@~$
 ```
 
