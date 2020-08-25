@@ -289,21 +289,17 @@ gonza-juan-p@~$
 - Handle Ctrl+C: your shell should not quit when the user inputs ^C
 ```
 gonza-juan-p@~$ ls /var || ls /var
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-gonza-juan-p@~$ ls /hbtn || ls /var
-ls: cannot access /hbtn: No such file or directory
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-gonza-juan-p@~$ ls /hbtn || ls /hbtn || ls /hbtn || ls /var
-ls: cannot access /hbtn: No such file or directory
-ls: cannot access /hbtn: No such file or directory
-ls: cannot access /hbtn: No such file or directory
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-gonza-juan-p@~$ ls /hbtn || ls /hbtn || ls /hbtn || ls /var || ls /var
-ls: cannot access /hbtn: No such file or directory
-ls: cannot access /hbtn: No such file or directory
-ls: cannot access /hbtn: No such file or directory
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-gonza-juan-p@~$
+julien@ubuntu:~/shell$ ./hsh
+$ ^C
+$ ^C
+$ ^C
+$ ls /var
+backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  snap  spool  tmp
+$ ^C
+$ ^C
+$ ^C
+$ exit
+julien@ubuntu:~/shell$ 
 ```
 
 
