@@ -31,9 +31,9 @@
 #define OR    9
 #define COMM 10
 /* Redirections */
-#define O_COMM    -3
-#define NO_OTHER  -2
-#define CLOSED    -1
+#define O_COMM    -4
+#define NO_OTHER  -3
+#define CLOSED    -2
 #define READ_END   0
 #define WRITE_END  1
 #define STDIN_OUT  2
@@ -109,14 +109,15 @@ int _hlphistory(char **av, lenv_s **lenv, unsigned int *e);
 /* Functions related with redirection */
 char *_split_oper(char *line, int *fd, size_t *execnt, int inter, char **cmd2);
 char _find_oper(char *str, char oper);
-char *_trim(char *str, char c);
+int _is_err_syntax(char *s, char *c, size_t execnt);
+void _hide_char(char *str, char ctoh, char cio);
+int _cmm_case(char *line);
 int _dup(int fd, char inout);
+void _unexpected_char(size_t execnt, char c);
 void _unexpected_redir(size_t execnt);
 void _cannot_create(char ret, char *f, size_t execnt);
 int _rdheredoc(char *f, int inter);
 int _def_flags(char *, int *, char, char, int, int *, char **, char **);
-int _cmm_case(char *line);
-void _hide_char(char *str, char ctoh, char cio);
 
 /* strings functions */
 int _strlen(char *s);
@@ -124,6 +125,7 @@ char *_strdup(char *str);
 int _strcmp(char *s1, char *s2);
 int _strncmp(char *s1, char *s2, int n);
 char *_strchr(char *s, int c);
+char *_trim(char *str, char c);
 
 /* enviroment funcs */
 size_t print_list(lenv_s **head);
