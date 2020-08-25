@@ -172,6 +172,28 @@ HOLBERTON $
 gonza-juan-pc@~$
 ```
 
+```
+#### hsh 1.4 +
+- Handle the double left stream redirection << (also known as heredoc)
+- Usage: "command << delimiter"
+```
+gonza-juan-pc@~$ cat -e << HOLBERTON
+> qwertyuiop
+> ls -l                          
+> cat -e small_file
+> HOLBERTONnope
+> nopeHOLBERTON
+> HOLBERTON 
+> HOLBERTON
+qwertyuiop$
+ls -l$
+cat -e small_file$
+HOLBERTONnope$
+nopeHOLBERTON$
+HOLBERTON $
+gonza-juan-pc@~$
+```
+
 ## Authors
 
 **Juan Marcos Cabezas**
