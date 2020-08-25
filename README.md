@@ -252,6 +252,27 @@ ls: cannot access /hbtn: No such file or directory
 gonza-juan-pc@~$
 ```
 
+#### hsh 1.7 +
+- Handle the "&&" logical operator
+```
+gonza-juan-pc@~$ ls /var && ls /var
+backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
+backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
+gonza-juan-pc@~$ ls /hbtn && ls /var
+ls: cannot access /hbtn: No such file or directory
+gonza-juan-pc@~$ ls /var && ls /var && ls /var && ls /hbtn
+backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
+backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
+backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
+ls: cannot access /hbtn: No such file or directory
+gonza-juan-pc@~$ ls /var && ls /var && ls /var && ls /hbtn && ls /hbtn
+backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
+backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
+backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
+ls: cannot access /hbtn: No such file or directory
+gonza-juan-pc@~$
+```
+
 ## Authors
 
 **Juan Marcos Cabezas**
