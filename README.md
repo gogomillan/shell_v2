@@ -194,20 +194,35 @@ pmt
 gonza-juan-pc@~$ ls -lr /var | cat -e
 total 44$
 drwxrwxrwt  2 root root     4096 Jul  5 10:26 tmp$
+
 drwxr-xr-x  9 root root     4096 Feb 17  2016 spool$
+
 lrwxrwxrwx  1 root root        4 Nov 19  2016 run -> /run$
+
 drwxr-xr-x  2 root root     4096 Feb 17  2016 opt$
+
 drwxrwsrwt  2 root whoopsie 4096 Feb 17  2016 metrics$
+
 drwxrwsr-x  2 root mail     4096 Feb 17  2016 mail$
+
 drwxrwxr-x 14 root syslog   4096 Jul 11 09:34 log$
+
 lrwxrwxrwx  1 root root        9 Nov 19  2016 lock -> /run/lock$
+
 drwxrwsr-x  2 root staff    4096 Apr 10  2014 local$
+
 drwxr-xr-x 70 root root     4096 Mar 21 13:06 lib$
+
 drwxrwsrwt  2 root whoopsie 4096 Jul 11 14:54 crash$
+
 drwxr-xr-x 17 root root     4096 Feb 17  2016 cache$
+
 drwxr-xr-x  2 root root     4096 Jul 11 09:33 backups$
-gonza-juan-pc@~$ echo "Holberton" | wc -c
+
+gonza-juan-pc@~$ echo "Holberton" | wc -
+
 10
+
 gonza-juan-pc@~$ 
 ```
 
