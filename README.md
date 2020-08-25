@@ -301,6 +301,22 @@ $ exit
 gonza-juan-pc@ubuntu:~/shell$ 
 ```
 
+#### hsh 1.0 +
+- Handle Ctrl+C: your shell should not quit when the user inputs ^C
+```
+gonza-juan-pc@ubuntu:~/shell$ ./hsh
+$ ^C
+$ ^C
+$ ^C
+$ ls /var
+backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  snap  spool  tmp
+$ ^C
+$ ^C
+$ ^C
+$ exit
+gonza-juan-pc@ubuntu:~/shell$ 
+```
+
 
 ## Authors
 
