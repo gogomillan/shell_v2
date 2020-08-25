@@ -105,6 +105,16 @@ Holberton School$
 gonza-juan-pc@~$ 
 ```
 
+#### hsh 1.1 +
+- Handle the right stream redirection ">"
+- Usage: "command n> output_file"
+```
+gonza-juan-pc@~$ echo Holberton School > test
+gonza-juan-pc@~$ cat -e test
+Holberton School$
+gonza-juan-pc@~$ 
+```
+
 ## Authors
 
 **Juan Marcos Cabezas**
