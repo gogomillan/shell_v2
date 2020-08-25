@@ -112,7 +112,15 @@ gonza-juan-pc@~$
 gonza-juan-pc@~$ echo Holberton School > test
 gonza-juan-pc@~$ cat -e test
 Holberton School$
-gonza-juan-pc@~$ 
+gonza-juan-pc@~$ echo Holberton School 1> test
+gonza-juan-pc@~$ cat -e test
+Holberton School$
+gonza-juan-pc@~$ echo Holberton School 2> test
+gonza-juan-pc@~$ cat -e test
+gonza-juan-pc@~$ ls /hbtn 2> test
+gonza-juan-pc@~$ cat -e test
+ls: cannot access /hbtn: No such file or directory$
+gonza-juan-pc@~$
 ```
 
 ## Authors
