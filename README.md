@@ -123,6 +123,21 @@ ls: cannot access /hbtn: No such file or directory$
 gonza-juan-pc@~$
 ```
 
+#### hsh 1.1 +
+- Handle the double right stream redirection ">>"
+- Usage: "command >> output_file"
+```
+gonza-juan-pc@~$ rm -f test
+gonza-juan-pc@~$ echo Holberton School >> test
+gonza-juan-pc@~$ cat -e test
+Holberton School$
+gonza-juan-pc@~$ echo Holberton School >> test
+gonza-juan-pc@~$ cat -e test
+Holberton School$
+Holberton School$
+gonza-juan-pc@~$ 
+```
+
 ## Authors
 
 **Juan Marcos Cabezas**
