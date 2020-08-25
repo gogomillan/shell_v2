@@ -253,7 +253,7 @@ gonza-juan-pc@~$
 ```
 
 #### hsh 1.7 +
-- Handle the "&&" logical operator
+- Handle the "||" logical operator
 ```
 gonza-juan-pc@~$ ls /var && ls /var
 backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
