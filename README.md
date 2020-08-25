@@ -38,6 +38,7 @@ The concepts covered here are:
 
 ## Installation
 1. Clone the repo in your local machine:
+
 **Example:**
 ```bash
 vagrant@~$
@@ -45,6 +46,7 @@ vagrant@~$ git clone https://github.com/gogomillan/shell_v2
 vagrant@~$
 ```
 2. Go to the directory and compile the task you want:
+
 **Example:**
 ```bash
 vagrant@~$
@@ -65,6 +67,7 @@ vagrant@~$
 ## Testing
 
 This shell work like this in interactive mode:
+
 **Example:**
 ```bash
 vagrant@~$ ./hsh
@@ -76,6 +79,7 @@ vagrant@~$
 ```
 
 But also in non-interactive mode:
+
 **Example:**
 ```bash
 vagrant@~$
