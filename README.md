@@ -98,6 +98,12 @@ vagrant@~$
 #### hsh 1.0 +
 - Handle the right stream redirection ">"
 - Usage: "command > output_file"
+```
+gonza-juan-pc@~$ echo Holberton School > test
+gonza-juan-pc@~$ cat -e test
+Holberton School$
+gonza-juan-pc@~$ 
+```
 
 ## Authors
 
