@@ -142,15 +142,13 @@ gonza-juan-pc@~$
 - Handle the left stream redirection "<"
 - Usage: "command < output_file"
 ```
-gonza-juan-pc@~$ rm -f test
-gonza-juan-pc@~$ echo Holberton School >> test
-gonza-juan-pc@~$ cat -e test
-Holberton School$
-gonza-juan-pc@~$ echo Holberton School >> test
-gonza-juan-pc@~$ cat -e test
-Holberton School$
-Holberton School$
-gonza-juan-pc@~$ 
+gonza-juan-pc@~$ cat -e small_file 
+Holberton$
+Second line$
+gonza-juan-pc@~$ rev < small_file
+notrebloH
+enil dnoceS
+gonza-juan-pc@~$
 ```
 
 ## Authors
