@@ -175,7 +175,7 @@ gonza-juan-pc@~$
 ```
 #### hsh 1.4 +
 - Handle the pipe stream redirection "|"
-- Usage: "command << delimiter"
+- Usage: "command1 | command2"
 ```
 gonza-juan-pc@~$ cat -e << HOLBERTON
 > qwertyuiop
