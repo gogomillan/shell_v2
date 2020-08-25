@@ -149,6 +149,19 @@ gonza-juan-pc@~$ rev < small_file
 notrebloH
 enil dnoceS
 gonza-juan-pc@~$
+
+```
+#### hsh 1.3 +
+- Handle the double left stream redirection << (also known as heredoc)
+- Usage: "command < output_file"
+```
+gonza-juan-pc@~$ cat -e small_file 
+Holberton$
+Second line$
+gonza-juan-pc@~$ rev < small_file
+notrebloH
+enil dnoceS
+gonza-juan-pc@~$
 ```
 
 ## Authors
