@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="600" height="350" src="assets/carbon_SimpleShellV_2.png">
+  <img width="791" height="223" src="assets/carbon_SimpleShellV_2.png">
 </div>
 
 # Simple Shell v .02
