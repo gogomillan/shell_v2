@@ -1,6 +1,15 @@
-# Simple shell v2
-This project named "simple shell" and its executable "hsh" is based on the
-original sh "Borne shell" functionality, but an small subset.  
+<div align="center">
+  <img width="600" height="350" src="assets/carbon_SimpleShellV_2.png">
+</div>
+
+# Simple Shell v .02
+Simple Shell V 2.0 is a project based on the original sh "Borne shell" functionality,
+but a small subset and allows us to understand Unix-like OS architecture. It was
+developed on Ubuntu Linux and with C language.
+
+![OS Linux](https://img.shields.io/badge/OS-Linux-blue.svg)
+![distro Ubuntu](https://img.shields.io/badge/distro-Ubuntu-orange.svg)
+![tecnology C](https://img.shields.io/badge/technology-C-green.svg)
 
 The concepts covered here are:
 - Who designed and implemented the original Unix operating system
