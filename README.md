@@ -2,7 +2,7 @@
   <img width="791" height="223" src="assets/carbon_SimpleShellV_2.png">
 </div>
 
-# Simple Shell v .02
+# Simple Shell v 2.0
 Simple Shell V 2.0 is a project based on the original sh "Borne shell" functionality,
 but a small subset and allows us to understand Unix-like OS architecture. It was
 developed on Ubuntu Linux and with C language.
